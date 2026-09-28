@@ -33,7 +33,9 @@ export default function Survey() {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [finalPhoto, setFinalPhoto] = useState(false),
-    [choosing, setChoosing] = useState(false);
+    [choosing, setChoosing] = useState(false),
+    [leaving, setLeaving] = useState(false),
+    [cameraOpen, setCameraOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null),
     sending = useRef(false),
     choosingRef = useRef(false);
@@ -64,11 +66,16 @@ export default function Survey() {
   useEffect(() => {
     if (draft) saveLocal("survey", draft);
   }, [draft]);
-  function step(n: number) {
+  /** Soft transition: fade the current question out, then show the next. */
+  function step(n: number, patch: Partial<Draft> = {}) {
     if (timer.current) clearTimeout(timer.current);
-    choosingRef.current = false;
-    setChoosing(false);
-    setDraft((d) => (d ? { ...d, step: n } : d));
+    setLeaving(true);
+    timer.current = setTimeout(() => {
+      choosingRef.current = false;
+      setChoosing(false);
+      setDraft((d) => (d ? { ...d, ...patch, step: n } : d));
+      setLeaving(false);
+    }, 280);
   }
   function rate(value: number) {
     if (!draft || choosingRef.current) return;
@@ -79,7 +86,7 @@ export default function Survey() {
       ...draft,
       ratings: draft.ratings.map((r, i) => (i === index ? value : r)),
     });
-    timer.current = setTimeout(() => step(index + 2), 500);
+    timer.current = setTimeout(() => step(index + 2), 450);
   }
   async function submit() {
     if (!draft || sending.current) return;
@@ -127,22 +134,27 @@ export default function Survey() {
     return (
       <main className="experience">
         <Scene id="thanks">
-          <Logo small />
-          <p className="emotional">
-            Gracias por participar.
-            <br />
-            <br />
-            Su opinión será tenida en cuenta para futuras escapadas juntos.
-            <br />
-            <br />
-            Te amo ❤️
-          </p>
+          {!cameraOpen && (
+            <>
+              <Logo small />
+              <p className="emotional">
+                Gracias por participar.
+                <br />
+                <br />
+                Tu opinión será tenida en cuenta para futuras escapadas juntos.
+                <br />
+                <br />
+                Te amo ❤️
+              </p>
+            </>
+          )}
           <RegisterMoment
             slot="encuesta"
             initialLabel="📷 REGISTRAR ÚLTIMO MOMENTO"
             onKnown={known}
+            onCamera={setCameraOpen}
           />
-          {finalPhoto && (
+          {finalPhoto && !cameraOpen && (
             <Button onClick={() => setStatus("gallery")}>
               ❤️ VER NUESTROS MOMENTOS
             </Button>
@@ -151,17 +163,36 @@ export default function Survey() {
       </main>
     );
   return (
-    <main className="experience">
-      <Scene id={`survey-${draft.step}`}>
+    <main className="experience survey">
+      {draft.step >= 1 && draft.step <= 11 && (
+        <img
+          className="corner-logo"
+          src="/logo_roumavis.png"
+          alt=""
+          aria-hidden="true"
+          width={500}
+          height={500}
+        />
+      )}
+      <Scene
+        id={`survey-${draft.step}`}
+        className={leaving ? "soft leaving" : "soft"}
+      >
         {draft.step === 0 && (
           <>
-            <Logo small />
+            <img
+              className="logo survey-logo"
+              src="/logo_roumavis.png"
+              alt="Roumavis: nosotros dos"
+              width={500}
+              height={500}
+            />
             <p className="emotional">
               El finde llegó a su fin, así que es hora de....
             </p>
-            <h1 className="reveal">¡La encuesta de satisfacción!</h1>
+            <h1>¡La encuesta de satisfacción!</h1>
             <Ornament />
-            <p className="meta">
+            <p className="meta meta-lg">
               Fecha: 10–12 de octubre de 2026
               <br />
               Participantes: 2<br />
@@ -218,9 +249,7 @@ export default function Survey() {
                 <Button
                   key={value}
                   className={draft.repeatTrip === value ? "" : "secondary"}
-                  onClick={() =>
-                    setDraft({ ...draft, repeatTrip: value, step: 11 })
-                  }
+                  onClick={() => step(11, { repeatTrip: value })}
                 >
                   {value}
                 </Button>

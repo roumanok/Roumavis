@@ -10,17 +10,23 @@ export default function RegisterMoment({
   alwaysShow = false,
   onSaved,
   onKnown,
+  onCamera,
 }: {
   slot: MomentSlot;
   initialLabel?: string;
   alwaysShow?: boolean;
   onSaved?: () => void;
   onKnown?: (exists: boolean) => void;
+  /** Notified when the camera opens/closes (to hide surrounding content). */
+  onCamera?: (open: boolean) => void;
 }) {
   const [info, setInfo] = useState<MomentInfo | null>(null),
     [camera, setCamera] = useState(false),
     [open, setOpen] = useState(alwaysShow),
     [error, setError] = useState("");
+  useEffect(() => {
+    onCamera?.(camera);
+  }, [camera, onCamera]);
   const refresh = useCallback(async () => {
     try {
       const data = await api<MomentInfo>(`/api/moments/${slot}?info`);

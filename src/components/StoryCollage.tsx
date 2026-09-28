@@ -45,12 +45,21 @@ export async function makeCollage() {
   ctx.fillText("NUESTRO FINDE", 540, 300);
   ctx.font = "24px Manrope, sans-serif";
   ctx.fillText("10 — 12 · OCT · 2026", 540, 349);
+  // Polaroids whose photo window is 4:5, same as the captured selfies.
+  // Three across the top, then "Buen día" and a larger final photo.
+  const polaroid = (x: number, y: number, w: number, a: number) => ({
+    x,
+    y,
+    w,
+    h: Math.round((w - 30) * 1.25) + 69,
+    a,
+  });
   const positions = [
-    { x: 80, y: 412, w: 424, h: 402, a: -0.045 },
-    { x: 572, y: 428, w: 420, h: 400, a: 0.04 },
-    { x: 72, y: 870, w: 426, h: 408, a: 0.028 },
-    { x: 574, y: 886, w: 422, h: 402, a: -0.045 },
-    { x: 239, y: 1340, w: 602, h: 420, a: 0.012 },
+    polaroid(50, 418, 330, -0.045),
+    polaroid(375, 402, 330, 0.03),
+    polaroid(700, 422, 330, -0.035),
+    polaroid(66, 1030, 390, 0.035),
+    polaroid(486, 940, 530, -0.02),
   ];
   positions.forEach((p, i) => {
     ctx.save();
@@ -92,15 +101,15 @@ export async function makeCollage() {
       ctx.fillText("♡", p.w / 2, p.h / 2);
     }
     ctx.fillStyle = "#581C2B";
-    ctx.font = '26px "Cormorant Garamond", Georgia';
+    ctx.font = `${p.w > 450 ? 32 : 26}px "Cormorant Garamond", Georgia`;
     ctx.fillText(labels[slots[i]].replace(" ❤️", ""), p.w / 2, p.h - 22);
     ctx.restore();
   });
   ctx.fillStyle = "#581C2B";
   ctx.font = "26px Manrope, sans-serif";
-  ctx.fillText("#NuestroFinde", 540, 1820);
+  ctx.fillText("#NuestroFinde", 540, 1782);
   ctx.font = "18px Manrope, sans-serif";
-  ctx.fillText("San Miguel del Monte · 2026", 540, 1855);
+  ctx.fillText("Palmas de la Laguna · 2026", 540, 1820);
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve, "image/png"),
   );
@@ -108,7 +117,14 @@ export async function makeCollage() {
     throw new Error("No pudimos generar el recuerdo. Intentá otra vez.");
   return blob;
 }
-export default function StoryCollage() {
+export default function StoryCollage({
+  onStart,
+  autoStart = false,
+}: {
+  /** If set, the create button hands off to the parent instead. */
+  onStart?: () => void;
+  autoStart?: boolean;
+} = {}) {
   const [blob, setBlob] = useState<Blob | null>(null),
     [url, setUrl] = useState(""),
     [error, setError] = useState(""),
@@ -124,6 +140,11 @@ export default function StoryCollage() {
     setShare(!!navigator.canShare?.({ files: [file] }));
     return () => URL.revokeObjectURL(url);
   }, [blob]);
+  useEffect(() => {
+     
+    if (autoStart) void create();
+     
+  }, [autoStart]);
   async function create() {
     setBusy(true);
     setError("");
@@ -147,7 +168,10 @@ export default function StoryCollage() {
         />
       )}
       {!blob ? (
-        <Button disabled={busy} onClick={() => void create()}>
+        <Button
+          disabled={busy}
+          onClick={() => (onStart ? onStart() : void create())}
+        >
           {busy ? "CREANDO NUESTRO RECUERDO…" : "CREAR NUESTRO RECUERDO"}
         </Button>
       ) : (

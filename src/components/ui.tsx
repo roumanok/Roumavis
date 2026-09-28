@@ -44,9 +44,11 @@ export function NextButton({
 export function Scene({
   children,
   id,
+  className = "fade",
 }: {
   children: ReactNode;
   id: string | number;
+  className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -54,7 +56,7 @@ export function Scene({
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [id]);
   return (
-    <section key={id} ref={ref} tabIndex={-1} className="scene fade">
+    <section key={id} ref={ref} tabIndex={-1} className={`scene ${className}`}>
       {children}
     </section>
   );

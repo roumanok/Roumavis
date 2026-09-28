@@ -7,7 +7,8 @@ import { ErrorMessage, NextButton, Ornament, PhotoFrame, Scene } from "./ui";
 export default function MomentViewer() {
   const [available, setAvailable] = useState<MomentSlot[] | null>(null),
     [index, setIndex] = useState(0),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [collage, setCollage] = useState(false);
   async function load() {
     try {
       const found = await Promise.all(
@@ -42,7 +43,7 @@ export default function MomentViewer() {
     );
   const slot = available[index];
   return (
-    <Scene id={`moment-${index}`}>
+    <Scene id={`moment-${index}${collage ? "-collage" : ""}`}>
       {slot ? (
         <>
           <p className="eyebrow">
@@ -62,18 +63,23 @@ export default function MomentViewer() {
             </button>
           )}
         </>
+      ) : collage ? (
+        <StoryCollage autoStart />
       ) : (
         <>
           <Ornament />
           <p className="emotional">
-            Un finde más para nuestra historia.
-            <br />
-            <br />Y muchos más por vivir.
+            Bueno, ahora a planear juntos nuestra próxima historia
             <br />
             <br />
             Te amo ❤️
           </p>
-          <StoryCollage />
+          <StoryCollage
+            onStart={() => {
+              setCollage(true);
+              window.scrollTo({ top: 0 });
+            }}
+          />
           {available.length > 0 && (
             <button className="text-button" onClick={() => setIndex(0)}>
               Volver a ver nuestros momentos

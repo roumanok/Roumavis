@@ -661,3 +661,44 @@ button.danger {
   border-color: #9b1c1c;
   color: #fff;
 }
+/* Survey: softer question-to-question transition + fixed corner logo */
+.soft {
+  animation: soft-arrive 0.45s ease-out both;
+  transition: opacity 0.28s ease;
+}
+.soft.leaving {
+  opacity: 0;
+}
+@keyframes soft-arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.survey {
+  position: relative;
+}
+.corner-logo {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 14px);
+  left: calc(env(safe-area-inset-left) + 14px);
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  z-index: 2;
+  pointer-events: none;
+}
+.survey .scene {
+  padding-top: calc(env(safe-area-inset-top) + 84px);
+}
+.logo.survey-logo {
+  width: 140px;
+  height: 140px;
+}
+.meta.meta-lg {
+  font-size: 16px;
+  line-height: 1.8;
+}
