@@ -34,10 +34,10 @@ export async function PUT(request: Request, { params }: Context) {
   return endpoint(async () => {
     await authorize(request, "admin");
     const year = yearSchema.parse((await params).year);
-    const { data, version } = await readUploadedPhoto(request);
+    const { data } = await readUploadedPhoto(request);
     return json({
       exists: true,
-      version: await writeImage(historyPath(year), data, version),
+      version: await writeImage(historyPath(year), data),
     });
   });
 }
@@ -45,7 +45,7 @@ export async function DELETE(request: Request, { params }: Context) {
   return endpoint(async () => {
     await authorize(request, "admin");
     const year = yearSchema.parse((await params).year);
-    await deleteImage(historyPath(year), request.headers.get("if-match") ?? "");
+    await deleteImage(historyPath(year));
     return json({ exists: false, version: null }, 200);
   });
 }

@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       await writeJSON(
         "data/encuesta.json",
         { ...data, submittedAt: new Date().toISOString() },
-        null,
+        false,
       );
     } catch (error) {
       if (!(await readSurvey())) throw error;

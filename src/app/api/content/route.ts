@@ -17,11 +17,7 @@ export async function PUT(request: Request) {
       .object({ content: contentSchema, version: z.string().nullable() })
       .parse(await limitedJSON(request));
     return json({
-      version: await writeJSON(
-        "data/contenido.json",
-        body.content,
-        body.version,
-      ),
+      version: await writeJSON("data/contenido.json", body.content, true),
     });
   });
 }

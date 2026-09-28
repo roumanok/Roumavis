@@ -7,7 +7,9 @@ import {
   type MomentSlot,
   surveySchema,
 } from "./models";
-import { HttpError } from "./auth";
+// The SDK retries "unknown" errors up to 10 times with exponential backoff,
+// which can leave a request hanging for minutes. Fail fast instead.
+process.env.VERCEL_BLOB_RETRIES ??= "2";
 export const readBlob = (path: string) =>
   get(path, { access: "private", useCache: false });
 export async function readJSON<T>(path: string, schema: z.ZodType<T>) {
@@ -18,16 +20,20 @@ export async function readJSON<T>(path: string, schema: z.ZodType<T>) {
   const data = schema.parse(await new Response(result.stream).json());
   return { data, version: result.blob.etag };
 }
+/**
+ * Writes JSON. `overwrite: false` only creates (used for the one-time survey).
+ * No ETag preconditions: there is a single admin, and ETags read via get()
+ * don't reliably match what put() expects (saves would hang retrying).
+ */
 export async function writeJSON(
   path: string,
   value: unknown,
-  version: string | null,
+  overwrite: boolean,
 ) {
   const result = await put(path, JSON.stringify(value), {
     access: "private",
     addRandomSuffix: false,
-    allowOverwrite: version !== null,
-    ...(version ? { ifMatch: version } : {}),
+    allowOverwrite: overwrite,
     contentType: "application/json",
     cacheControlMaxAge: 60,
   });
@@ -44,32 +50,21 @@ export const readSurvey = () =>
   );
 export const momentPath = (slot: MomentSlot) => `momentos/${slot}.jpg`;
 export const historyPath = (year: number) => `historia/${year}.jpg`;
-export const writeMoment = (
-  slot: MomentSlot,
-  data: Buffer,
-  version: string | null,
-) => writeImage(momentPath(slot), data, version);
-export async function writeImage(
-  path: string,
-  data: Buffer,
-  version: string | null,
-) {
+export const writeMoment = (slot: MomentSlot, data: Buffer) =>
+  writeImage(momentPath(slot), data);
+export async function writeImage(path: string, data: Buffer) {
   const result = await put(path, data, {
     access: "private",
     contentType: "image/jpeg",
     addRandomSuffix: false,
-    allowOverwrite: version !== null,
-    ...(version ? { ifMatch: version } : {}),
+    allowOverwrite: true,
     cacheControlMaxAge: 60,
   });
   return result.etag;
 }
-export const deleteMoment = (slot: MomentSlot, version: string) =>
-  deleteImage(momentPath(slot), version);
-export async function deleteImage(path: string, version: string) {
-  if (!version)
-    throw new HttpError(400, "Actualizá la página antes de eliminar.");
-  await del(path, { ifMatch: version });
+export const deleteMoment = (slot: MomentSlot) => deleteImage(momentPath(slot));
+export async function deleteImage(path: string) {
+  await del(path);
 }
 const resetSchema = z.object({ resetAt: z.string() });
 export async function readResetAt() {

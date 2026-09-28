@@ -26,10 +26,10 @@ export async function PUT(request: Request, { params }: Context) {
   return endpoint(async () => {
     await authorize(request);
     const slot = slotSchema.parse((await params).slot);
-    const { data, version } = await readUploadedPhoto(request);
+    const { data } = await readUploadedPhoto(request);
     return json({
       exists: true,
-      version: await writeMoment(slot, data, version),
+      version: await writeMoment(slot, data),
     });
   });
 }
@@ -37,7 +37,7 @@ export async function DELETE(request: Request, { params }: Context) {
   return endpoint(async () => {
     await authorize(request, "admin");
     const slot = slotSchema.parse((await params).slot);
-    await deleteMoment(slot, request.headers.get("if-match") ?? "");
+    await deleteMoment(slot);
     return json({ exists: false, version: null });
   });
 }

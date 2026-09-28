@@ -1,6 +1,17 @@
 export async function api<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, { ...init, cache: "no-store" });
-  const value = await response.json();
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...init,
+      cache: "no-store",
+      signal: init?.signal ?? AbortSignal.timeout(45_000),
+    });
+  } catch {
+    throw new Error(
+      "No hubo respuesta. Revisá la conexión e intentá otra vez.",
+    );
+  }
+  const value = await response.json().catch(() => ({}));
   if (!response.ok)
     throw new Error(value.error ?? "No pudimos completar la operación.");
   return value as T;
