@@ -43,12 +43,18 @@ export const readSurvey = () =>
     surveySchema.extend({ submittedAt: z.string().datetime() }),
   );
 export const momentPath = (slot: MomentSlot) => `momentos/${slot}.jpg`;
-export async function writeMoment(
+export const historyPath = (year: number) => `historia/${year}.jpg`;
+export const writeMoment = (
   slot: MomentSlot,
   data: Buffer,
   version: string | null,
+) => writeImage(momentPath(slot), data, version);
+export async function writeImage(
+  path: string,
+  data: Buffer,
+  version: string | null,
 ) {
-  const result = await put(momentPath(slot), data, {
+  const result = await put(path, data, {
     access: "private",
     contentType: "image/jpeg",
     addRandomSuffix: false,
@@ -58,10 +64,12 @@ export async function writeMoment(
   });
   return result.etag;
 }
-export async function deleteMoment(slot: MomentSlot, version: string) {
+export const deleteMoment = (slot: MomentSlot, version: string) =>
+  deleteImage(momentPath(slot), version);
+export async function deleteImage(path: string, version: string) {
   if (!version)
     throw new HttpError(400, "Actualizá la página antes de eliminar.");
-  await del(momentPath(slot), { ifMatch: version });
+  await del(path, { ifMatch: version });
 }
 const resetSchema = z.object({ resetAt: z.string() });
 export async function readResetAt() {

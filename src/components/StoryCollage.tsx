@@ -141,9 +141,7 @@ export default function StoryCollage({
     return () => URL.revokeObjectURL(url);
   }, [blob]);
   useEffect(() => {
-     
     if (autoStart) void create();
-     
   }, [autoStart]);
   async function create() {
     setBusy(true);

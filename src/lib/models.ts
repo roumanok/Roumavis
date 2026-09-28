@@ -76,4 +76,10 @@ export type ContentResponse = {
   version: string | null;
 };
 export type MomentInfo = { exists: boolean; version: string | null };
-export const photoPath = (year: number) => `/historia/foto-${year - 2003}.png`;
+/** Static fallback bundled in /public (used when no photo was uploaded). */
+export const staticPhotoPath = (year: number) =>
+  `/historia/foto-${year - 2003}.png`;
+/** Photo for a history year: uploaded (private Blob) or static fallback. */
+export const photoPath = (year: number, version?: string | null) =>
+  `/api/history/${year}${version ? `?v=${encodeURIComponent(version)}` : ""}`;
+export const yearSchema = z.coerce.number().int().min(2004).max(2025);

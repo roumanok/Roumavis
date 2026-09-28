@@ -598,11 +598,9 @@ textarea {
     width: 160px;
     height: 160px;
   }
+  /* Keep the 4:5 framing chosen in the admin; just shrink the frame. */
   .history-scene .photo-frame {
-    max-width: 270px;
-  }
-  .history-scene .photo-inner {
-    aspect-ratio: 1;
+    max-width: 232px;
   }
   .history-year {
     font-size: 38px;
@@ -701,4 +699,21 @@ button.danger {
 .meta.meta-lg {
   font-size: 16px;
   line-height: 1.8;
+}
+.history-photo,
+.history-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.history-editor .photo-frame {
+  max-width: 300px;
+}
+.history-photo-actions {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }

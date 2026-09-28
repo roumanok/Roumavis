@@ -1,5 +1,5 @@
-import sharp from "sharp";
-import { authorize, HttpError } from "@/lib/auth";
+import { authorize } from "@/lib/auth";
+import { readUploadedPhoto } from "@/lib/image";
 import { endpoint, json, noStore } from "@/lib/http";
 import { slotSchema } from "@/lib/models";
 import { readBlob, momentPath, writeMoment, deleteMoment } from "@/lib/storage";
@@ -26,40 +26,10 @@ export async function PUT(request: Request, { params }: Context) {
   return endpoint(async () => {
     await authorize(request);
     const slot = slotSchema.parse((await params).slot);
-    if (Number(request.headers.get("content-length") ?? 0) > 4_000_000)
-      throw new HttpError(413, "La foto es demasiado grande.");
-    const form = await request.formData();
-    const file = form.get("photo");
-    if (!(file instanceof File) || file.size > 3_500_000 || file.size === 0)
-      throw new HttpError(400, "Elegí una foto más pequeña.");
-    const version = form.get("version");
-    let data: Buffer;
-    try {
-      data = await sharp(Buffer.from(await file.arrayBuffer()), {
-        limitInputPixels: 40_000_000,
-      })
-        .rotate()
-        .resize({
-          width: 1800,
-          height: 1800,
-          fit: "inside",
-          withoutEnlargement: true,
-        })
-        .jpeg({ quality: 86 })
-        .toBuffer();
-    } catch {
-      throw new HttpError(
-        400,
-        "No pudimos abrir esa foto. Probá con una imagen JPG o PNG.",
-      );
-    }
+    const { data, version } = await readUploadedPhoto(request);
     return json({
       exists: true,
-      version: await writeMoment(
-        slot,
-        data,
-        typeof version === "string" && version ? version : null,
-      ),
+      version: await writeMoment(slot, data, version),
     });
   });
 }

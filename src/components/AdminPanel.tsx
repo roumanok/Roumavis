@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/client";
 import {
   slots,
-  photoPath,
   questions,
   type ContentResponse,
   type Survey,
@@ -12,7 +11,8 @@ import {
   type MomentInfo,
 } from "@/lib/models";
 import RegisterMoment from "./RegisterMoment";
-import { Button, ErrorMessage, Logo, PhotoFrame } from "./ui";
+import AdminHistoryPhoto from "./AdminHistoryPhoto";
+import { Button, ErrorMessage, Logo } from "./ui";
 const sections = ["Historia", "Mensajes", "Momentos", "Encuesta"] as const;
 function AdminMoment({ slot }: { slot: MomentSlot }) {
   const [version, setVersion] = useState(0),
@@ -217,6 +217,7 @@ export default function AdminPanel() {
               </li>
             </ul>
             <p>
+              Las fotos de la historia (2004–2025) no se tocan.{" "}
               <strong>No se puede deshacer.</strong>
             </p>
           </div>
@@ -272,10 +273,7 @@ export default function AdminPanel() {
           {data.content.history.map((entry, i) => (
             <section className="admin-card" key={entry.year}>
               <h2>{entry.year}</h2>
-              <PhotoFrame
-                src={photoPath(entry.year)}
-                alt={`Foto de ${entry.year}`}
-              />
+              <AdminHistoryPhoto year={entry.year} />
               <label className="form-fields">
                 Frase de {entry.year}
                 <textarea

@@ -169,6 +169,7 @@ export default function Story() {
               <p className="eyebrow">Nuestra historia</p>
               <h1 className="history-year">{2004 + scene - 4}</h1>
               <PhotoFrame
+                fill
                 key={scene}
                 src={photoPath(2004 + scene - 4)}
                 alt={`Nosotros en ${2004 + scene - 4}`}
