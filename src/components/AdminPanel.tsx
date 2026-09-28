@@ -73,7 +73,10 @@ export default function AdminPanel() {
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
     [busy, setBusy] = useState(false),
-    [dirty, setDirty] = useState(false);
+    [dirty, setDirty] = useState(false),
+    [confirmReset, setConfirmReset] = useState(false),
+    [resetContent, setResetContent] = useState(false),
+    [resetKey, setResetKey] = useState(0);
   const router = useRouter();
   const load = useCallback(async () => {
     try {
@@ -124,6 +127,28 @@ export default function AdminPanel() {
       setBusy(false);
     }
   }
+  async function reset() {
+    if (busy) return;
+    setBusy(true);
+    setMessage("");
+    setError("");
+    try {
+      await api("/api/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ includeContent: resetContent }),
+      });
+      setConfirmReset(false);
+      setResetContent(false);
+      setResetKey((k) => k + 1);
+      await load();
+      setMessage("Listo: la experiencia quedó como nueva.");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
   return (
     <main className="admin">
       <header className="admin-header">
@@ -148,6 +173,13 @@ export default function AdminPanel() {
           Actualizar datos
         </button>
         <button
+          className="text-button danger-text"
+          disabled={busy}
+          onClick={() => setConfirmReset(true)}
+        >
+          Reiniciar
+        </button>
+        <button
           className="text-button"
           onClick={async () => {
             if (
@@ -166,6 +198,55 @@ export default function AdminPanel() {
           Cerrar sesión
         </button>
       </div>
+      {confirmReset && (
+        <section
+          className="reset-confirm"
+          role="alertdialog"
+          aria-labelledby="reset-title"
+          aria-describedby="reset-desc"
+        >
+          <h2 id="reset-title">¿Reiniciar toda la experiencia?</h2>
+          <div id="reset-desc">
+            <p>Se va a eliminar definitivamente:</p>
+            <ul>
+              <li>Las cinco fotos de los momentos (incluida la selfie 2026)</li>
+              <li>Las respuestas de la encuesta</li>
+              <li>
+                El progreso guardado en cada celular (la historia y la encuesta
+                arrancan de cero la próxima vez que se abran)
+              </li>
+            </ul>
+            <p>
+              <strong>No se puede deshacer.</strong>
+            </p>
+          </div>
+          <label className="reset-option">
+            <input
+              type="checkbox"
+              checked={resetContent}
+              onChange={(e) => setResetContent(e.target.checked)}
+            />
+            También borrar las frases de la historia y los mensajes (vuelven a
+            los textos originales)
+          </label>
+          <div className="actions">
+            <Button
+              className="secondary"
+              disabled={busy}
+              onClick={() => setConfirmReset(false)}
+            >
+              CANCELAR
+            </Button>
+            <Button
+              className="danger"
+              disabled={busy}
+              onClick={() => void reset()}
+            >
+              {busy ? "BORRANDO…" : "SÍ, BORRAR TODO"}
+            </Button>
+          </div>
+        </section>
+      )}
       <nav className="admin-nav" aria-label="Secciones de administración">
         {sections.map((section) => (
           <Button
@@ -258,7 +339,7 @@ export default function AdminPanel() {
       {tab === "Momentos" && (
         <div className="admin-grid">
           {slots.map((slot) => (
-            <AdminMoment key={slot} slot={slot} />
+            <AdminMoment key={`${slot}-${resetKey}`} slot={slot} />
           ))}
         </div>
       )}

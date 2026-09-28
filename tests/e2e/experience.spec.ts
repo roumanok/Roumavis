@@ -14,6 +14,13 @@ async function fixtures(page: Page, { photos = false } = {}) {
   const saved = new Set(
     photos ? ["historia", "vista", "cama", "mesita", "encuesta"] : [],
   );
+  await page.route("**/api/reset", async (route) => {
+    if (route.request().method() === "POST") {
+      saved.clear();
+      submitted = false;
+    }
+    await route.fulfill({ json: { resetAt: null } });
+  });
   await page.route("**/api/content", async (route) => {
     if (route.request().method() === "PUT") {
       content = route.request().postDataJSON().content;
@@ -220,6 +227,21 @@ test("admin signs in on server, saves editable content and deletes a moment", as
   await expect(
     page.getByRole("button", { name: "Eliminar foto", exact: true }),
   ).toHaveCount(4);
+  await page.getByRole("button", { name: "Reiniciar", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "¿Reiniciar toda la experiencia?" }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "test-results/admin-reset.png",
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "SÍ, BORRAR TODO" }).click();
+  await expect(page.getByRole("status")).toHaveText(
+    "Listo: la experiencia quedó como nueva.",
+  );
+  await expect(
+    page.getByRole("button", { name: "Eliminar foto", exact: true }),
+  ).toHaveCount(0);
   await page
     .getByRole("button", { name: "Cerrar sesión", exact: true })
     .click();

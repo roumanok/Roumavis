@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { api, loadLocal, saveLocal } from "@/lib/client";
+import { api, loadLocal, saveLocal, syncReset } from "@/lib/client";
 import { questions, repeats, type SurveyInput } from "@/lib/models";
 import RegisterMoment from "./RegisterMoment";
 import MomentViewer from "./MomentViewer";
@@ -49,11 +49,15 @@ export default function Survey() {
   }, []);
   // External storage / browser resources are synchronized after hydration.
   useEffect(() => {
-    const parsed = draftSchema.safeParse(loadLocal<unknown>("survey", null));
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDraft(parsed.success ? parsed.data : fresh());
-    void check();
+    let alive = true;
+    void syncReset().then(() => {
+      if (!alive) return;
+      const parsed = draftSchema.safeParse(loadLocal<unknown>("survey", null));
+      setDraft(parsed.success ? parsed.data : fresh());
+      void check();
+    });
     return () => {
+      alive = false;
       if (timer.current) clearTimeout(timer.current);
     };
   }, [check]);

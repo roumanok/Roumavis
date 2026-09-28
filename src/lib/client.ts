@@ -20,3 +20,20 @@ export function saveLocal(key: string, value: unknown) {
     /* Private mode/full storage: keep the current session usable. */
   }
 }
+/**
+ * If the admin reset the experience since this device last synced, forget all
+ * local progress (story, survey draft…) so it starts from scratch.
+ */
+export async function syncReset() {
+  try {
+    const { resetAt } = await api<{ resetAt: string | null }>("/api/reset");
+    if (!resetAt || loadLocal<string | null>("reset-at", null) === resetAt)
+      return;
+    Object.keys(localStorage)
+      .filter((key) => key.startsWith(KEY))
+      .forEach((key) => localStorage.removeItem(key));
+    saveLocal("reset-at", resetAt);
+  } catch {
+    /* Offline or no storage: keep whatever progress exists. */
+  }
+}

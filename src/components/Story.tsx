@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { api, loadLocal, saveLocal } from "@/lib/client";
+import { api, loadLocal, saveLocal, syncReset } from "@/lib/client";
 import { defaults, photoPath, type ContentResponse } from "@/lib/models";
 import AudioController, { type AudioHandle } from "./AudioController";
 import Counter from "./Counter";
@@ -32,17 +32,24 @@ export default function Story() {
     }
   }, []);
   useEffect(() => {
-    const saved = loadLocal<number>("story-progress", 0);
+    let alive = true;
     // Read device-local progress only after hydration, never during server rendering.
+    void syncReset().then(() => {
+      if (!alive) return;
+      const saved = loadLocal<number>("story-progress", 0);
+      setScene(
+        loadLocal<boolean>("story-complete", false)
+          ? -1
+          : Number.isInteger(saved) && saved >= 0 && saved <= 28
+            ? saved
+            : 0,
+      );
+    });
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setScene(
-      loadLocal<boolean>("story-complete", false)
-        ? -1
-        : Number.isInteger(saved) && saved >= 0 && saved <= 28
-          ? saved
-          : 0,
-    );
     void fetchContent();
+    return () => {
+      alive = false;
+    };
   }, [fetchContent]);
   useEffect(() => {
     if (scene === null || scene < 0) return;

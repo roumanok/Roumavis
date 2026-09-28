@@ -63,3 +63,31 @@ export async function deleteMoment(slot: MomentSlot, version: string) {
     throw new HttpError(400, "Actualizá la página antes de eliminar.");
   await del(momentPath(slot), { ifMatch: version });
 }
+const resetSchema = z.object({ resetAt: z.string() });
+export async function readResetAt() {
+  return (await readJSON("data/reset.json", resetSchema))?.data.resetAt ?? null;
+}
+/**
+ * Deletes every guest-generated piece of data (photos + survey) and, when
+ * asked, the editable texts. Writes a new reset marker so devices clear their
+ * local progress on the next visit.
+ */
+export async function resetExperience(includeContent: boolean) {
+  const paths = [
+    ...(["historia", "vista", "cama", "mesita", "encuesta"] as const).map(
+      momentPath,
+    ),
+    "data/encuesta.json",
+    ...(includeContent ? ["data/contenido.json"] : []),
+  ];
+  await del(paths);
+  const resetAt = new Date().toISOString();
+  await put("data/reset.json", JSON.stringify({ resetAt }), {
+    access: "private",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: "application/json",
+    cacheControlMaxAge: 60,
+  });
+  return resetAt;
+}
