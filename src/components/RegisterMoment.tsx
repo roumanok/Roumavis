@@ -64,6 +64,7 @@ export default function RegisterMoment({
         <>
           {open && (
             <PhotoFrame
+              fill
               key={info?.version ?? "empty"}
               src={
                 info?.exists

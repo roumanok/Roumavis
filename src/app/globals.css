@@ -313,12 +313,60 @@ h2 {
 .camera-frame {
   transform: none;
 }
-.camera-frame video,
-.camera-frame > img {
+.camera-frame video {
+  display: block;
   width: 100%;
   aspect-ratio: 4/5;
-  object-fit: contain;
+  object-fit: cover;
   background: #eadfd3;
+}
+.photo-inner.fill img {
+  object-fit: cover;
+}
+.cropper-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cropper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  background: #eadfd3;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.cropper:active {
+  cursor: grabbing;
+}
+.cropper img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px;
+  color: var(--wine);
+  font-size: 20px;
+}
+.zoom-control input {
+  flex: 1;
+  min-height: 44px;
+  accent-color: var(--wine);
+}
+.crop-hint {
+  font-size: 13px;
+  opacity: 0.7;
+  margin: -6px 0 0;
 }
 .camera-frame video {
   transform: scaleX(-1);

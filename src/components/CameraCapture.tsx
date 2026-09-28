@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ErrorMessage } from "./ui";
+import PhotoCropper, { type PhotoCropperHandle } from "./PhotoCropper";
 export async function compressImage(blob: Blob): Promise<Blob> {
   const url = URL.createObjectURL(blob);
   try {
@@ -9,7 +10,7 @@ export async function compressImage(blob: Blob): Promise<Blob> {
     await image.decode();
     const scale = Math.min(
       1,
-      1800 / Math.max(image.naturalWidth, image.naturalHeight),
+      3200 / Math.max(image.naturalWidth, image.naturalHeight),
     );
     const canvas = document.createElement("canvas");
     canvas.width = Math.round(image.naturalWidth * scale);
@@ -38,7 +39,8 @@ export default function CameraCapture({
     stream = useRef<MediaStream | null>(null),
     active = useRef(true),
     generation = useRef(0),
-    busy = useRef(false);
+    busy = useRef(false),
+    cropper = useRef<PhotoCropperHandle>(null);
   const [photo, setPhoto] = useState<Blob | null>(null),
     [preview, setPreview] = useState(""),
     [ready, setReady] = useState(false),
@@ -134,7 +136,8 @@ export default function CameraCapture({
     setSaving(true);
     setError("");
     try {
-      await onSave(photo);
+      const cropped = cropper.current ? await cropper.current.crop() : photo;
+      await onSave(cropped);
     } catch (e) {
       setError(
         e instanceof Error
@@ -154,7 +157,7 @@ export default function CameraCapture({
     >
       <div className="photo-frame camera-frame">
         {photo ? (
-          <img src={preview || undefined} alt="Vista previa de nuestra foto" />
+          preview && <PhotoCropper ref={cropper} src={preview} />
         ) : (
           <video
             ref={video}
@@ -168,6 +171,7 @@ export default function CameraCapture({
       <ErrorMessage>{error}</ErrorMessage>
       {photo ? (
         <>
+          <p className="crop-hint">Arrastrá o pellizcá para acomodarla</p>
           <p className="emotional small-text">¿La guardamos?</p>
           <div className="actions">
             <Button

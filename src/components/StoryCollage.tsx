@@ -71,10 +71,21 @@ export async function makeCollage() {
     ctx.fillRect(x, y, w, h);
     const image = photos[i];
     if (image) {
-      const scale = Math.min(w / image.naturalWidth, h / image.naturalHeight);
-      const iw = image.naturalWidth * scale,
-        ih = image.naturalHeight * scale;
-      ctx.drawImage(image, x + (w - iw) / 2, y + (h - ih) / 2, iw, ih);
+      // Fill the polaroid window (cover), cropping the overflow evenly.
+      const scale = Math.max(w / image.naturalWidth, h / image.naturalHeight);
+      const sw = w / scale,
+        sh = h / scale;
+      ctx.drawImage(
+        image,
+        (image.naturalWidth - sw) / 2,
+        (image.naturalHeight - sh) / 2,
+        sw,
+        sh,
+        x,
+        y,
+        w,
+        h,
+      );
     } else {
       ctx.fillStyle = "#C99694";
       ctx.font = "70px Georgia";

@@ -50,6 +50,7 @@ export default function MomentViewer() {
           </p>
           <h1>{labels[slot]}</h1>
           <PhotoFrame
+            fill
             key={slot}
             src={`/api/moments/${slot}`}
             alt={labels[slot]}

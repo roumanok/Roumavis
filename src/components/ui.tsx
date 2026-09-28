@@ -77,15 +77,18 @@ export function PhotoFrame({
   src,
   alt,
   caption,
+  fill,
 }: {
   src?: string;
   alt: string;
   caption?: string;
+  /** Fill the frame (crop) instead of showing the whole photo. */
+  fill?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   return (
     <figure className="photo-frame">
-      <div className="photo-inner">
+      <div className={fill ? "photo-inner fill" : "photo-inner"}>
         {src && !failed ? (
           <img key={src} src={src} alt={alt} onError={() => setFailed(true)} />
         ) : (
