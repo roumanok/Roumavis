@@ -116,7 +116,30 @@ test("mobile story, calendar counter, camera fallback, completion and revisit", 
     await expect(
       page.getByRole("heading", { name: String(year), exact: true }),
     ).toBeVisible();
-    await page.getByRole("button", { name: "Continuar", exact: true }).click();
+    if (year === 2006) {
+      // Swipe left → next year; swipe right → back.
+      const swipe = async (dx: number) => {
+        const box = (await page.locator(".history-swipe").boundingBox())!;
+        const x = box.x + box.width / 2,
+          y = box.y + box.height / 2;
+        await page.locator(".history-swipe").dispatchEvent("touchstart", {
+          touches: [{ identifier: 1, clientX: x, clientY: y }],
+        });
+        await page.locator(".history-swipe").dispatchEvent("touchend", {
+          changedTouches: [{ identifier: 1, clientX: x + dx, clientY: y + 4 }],
+        });
+      };
+      await swipe(-120);
+      await expect(
+        page.getByRole("heading", { name: "2007", exact: true }),
+      ).toBeVisible();
+      await page.screenshot({ path: "test-results/history-swipe.png" });
+      await swipe(120);
+      await expect(
+        page.getByRole("heading", { name: "2006", exact: true }),
+      ).toBeVisible();
+    }
+    await page.getByRole("button", { name: "Año siguiente" }).click();
   }
   await expect(
     page.getByRole("heading", { name: "2026", exact: true }),

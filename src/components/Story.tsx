@@ -19,7 +19,8 @@ export default function Story() {
     [content, setContent] = useState(defaults),
     [error, setError] = useState(""),
     [tested, setTested] = useState(false),
-    [hasPhoto, setHasPhoto] = useState(false);
+    [hasPhoto, setHasPhoto] = useState(false),
+    [direction, setDirection] = useState<"next" | "prev">("next");
   const audio = useRef<AudioHandle>(null);
   const known = useCallback((exists: boolean) => setHasPhoto(exists), []);
   const fetchContent = useCallback(async () => {
@@ -68,7 +69,36 @@ export default function Story() {
       return () => clearTimeout(timer);
     }
   }, [scene]);
-  const next = () => setScene((value) => (value ?? 0) + 1);
+  const next = () => {
+    setDirection("next");
+    setScene((value) => (value ?? 0) + 1);
+  };
+  const previous = () => {
+    setDirection("prev");
+    setScene((value) => Math.max(4, (value ?? 4) - 1));
+  };
+  // Horizontal swipe between history years (vertical scrolling still works).
+  const touch = useRef<{ x: number; y: number; t: number } | null>(null);
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    touch.current = { x: t.clientX, y: t.clientY, t: Date.now() };
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    const start = touch.current;
+    touch.current = null;
+    if (!start || scene === null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x,
+      dy = t.clientY - start.y;
+    if (
+      Math.abs(dx) < 45 ||
+      Math.abs(dx) < Math.abs(dy) * 1.4 ||
+      Date.now() - start.t > 900
+    )
+      return;
+    if (dx < 0) next();
+    else if (scene > 4) previous();
+  }
   return (
     <main className="experience">
       <AudioController ref={audio} />
@@ -78,7 +108,16 @@ export default function Story() {
           <p className="eyebrow">Un momento…</p>
         </Scene>
       ) : (
-        <Scene id={scene}>
+        <Scene
+          id={scene}
+          className={
+            scene >= 4 && scene <= 25
+              ? direction === "next"
+                ? "slide-next"
+                : "slide-prev"
+              : "fade"
+          }
+        >
           {scene === -1 && (
             <>
               <Logo />
@@ -165,7 +204,27 @@ export default function Story() {
             </>
           )}
           {scene >= 4 && scene <= 25 && (
-            <>
+            <div
+              className="history-swipe"
+              onTouchStart={onTouchStart}
+              onTouchEnd={onTouchEnd}
+            >
+              {scene > 4 && (
+                <button
+                  className="float-arrow left"
+                  aria-label="Año anterior"
+                  onClick={previous}
+                >
+                  ‹
+                </button>
+              )}
+              <button
+                className="float-arrow right"
+                aria-label="Año siguiente"
+                onClick={next}
+              >
+                ›
+              </button>
               <p className="eyebrow">Nuestra historia</p>
               <h1 className="history-year">{2004 + scene - 4}</h1>
               <PhotoFrame
@@ -179,15 +238,6 @@ export default function Story() {
                   {content.history[scene - 4].caption}
                 </p>
               )}
-              <NextButton onClick={next} />
-              {scene > 4 && (
-                <button
-                  className="text-button"
-                  onClick={() => setScene(scene - 1)}
-                >
-                  Año anterior
-                </button>
-              )}
               {!tested && (
                 <button
                   className="text-button"
@@ -199,7 +249,7 @@ export default function Story() {
                   ♪ Acompañar con música
                 </button>
               )}
-            </>
+            </div>
           )}
           {scene === 26 && (
             <>

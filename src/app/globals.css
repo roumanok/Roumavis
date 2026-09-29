@@ -717,3 +717,74 @@ button.danger {
   justify-content: center;
   flex-wrap: wrap;
 }
+/* History: swipe between years + small floating arrows */
+.history-swipe {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  touch-action: pan-y;
+}
+.float-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid #58192b26;
+  background: #f5eee6b3;
+  color: var(--wine);
+  font-size: 22px;
+  opacity: 0.85;
+  line-height: 1;
+  padding: 0 0 3px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 10px #581c2b14;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+/* Invisible padding keeps a comfortable ~44px touch target. */
+.float-arrow::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+}
+.float-arrow.left {
+  left: calc(env(safe-area-inset-left) + 4px);
+}
+.float-arrow.right {
+  right: calc(env(safe-area-inset-right) + 4px);
+}
+.float-arrow:active {
+  background: var(--cream);
+}
+.slide-next {
+  animation: slide-from-right 0.42s ease-out both;
+}
+.slide-prev {
+  animation: slide-from-left 0.42s ease-out both;
+}
+@keyframes slide-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes slide-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
