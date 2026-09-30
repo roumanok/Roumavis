@@ -168,7 +168,6 @@ export default function CameraCapture({
           />
         )}
       </div>
-      <ErrorMessage>{error}</ErrorMessage>
       {photo ? (
         <>
           <p className="crop-hint">Arrastrá o pellizcá para acomodarla</p>
@@ -201,6 +200,7 @@ export default function CameraCapture({
           )}
         </>
       )}
+      <ErrorMessage>{error}</ErrorMessage>
       <div className="camera-links">
         {!photo ? (
           <label className="file-picker">

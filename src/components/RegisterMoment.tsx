@@ -57,6 +57,7 @@ export default function RegisterMoment({
       body: form,
     });
     setInfo(data);
+    setOpen(true);
     setCamera(false);
     setOpen(true);
     onKnown?.(true);
@@ -112,11 +113,7 @@ export default function RegisterMoment({
               )}
             </>
           ) : open ? null : (
-            <Button
-              className="secondary"
-              disabled={!info}
-              onClick={() => setCamera(true)}
-            >
+            <Button disabled={!info} onClick={() => setCamera(true)}>
               {!info && !error ? "CARGANDO…" : initialLabel}
             </Button>
           )}
