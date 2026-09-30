@@ -734,11 +734,11 @@ button.danger {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 1px solid #58192b26;
-  background: #f5eee6b3;
-  color: var(--wine);
+  border: 1px solid #fffaf3aa;
+  background: var(--wine);
+  color: var(--cream);
   font-size: 22px;
-  opacity: 0.85;
+  opacity: 0.9;
   line-height: 1;
   padding: 0 0 3px;
   display: grid;
@@ -760,7 +760,7 @@ button.danger {
   right: calc(env(safe-area-inset-right) + 4px);
 }
 .float-arrow:active {
-  background: var(--cream);
+  background: #3f1420;
 }
 .slide-next {
   animation: slide-from-right 0.42s ease-out both;
@@ -812,7 +812,13 @@ button.danger {
 .history-layout {
   justify-content: flex-start;
   padding-top: calc(env(safe-area-inset-top) + 96px);
+  padding-left: 14px;
+  padding-right: 14px;
   gap: 18px;
+}
+/* Bigger photos (same 4:5), capped by screen height to leave room below. */
+.history-layout .photo-frame {
+  max-width: min(460px, calc((100dvh - 280px) * 0.78));
 }
 .history-photo-wrap {
   position: relative;
@@ -843,10 +849,4 @@ button.danger {
 }
 .history-photo-wrap .register-moment {
   gap: 16px;
-}
-@media (max-height: 750px) {
-  .history-swipe .photo-frame,
-  .history-photo-wrap .photo-frame {
-    max-width: 260px;
-  }
 }

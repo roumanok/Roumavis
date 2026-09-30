@@ -274,7 +274,9 @@ export default function Story() {
                   lead={
                     selfieCamera ? null : (
                       <p className="emotional small-text">
-                        ¿Te parece sumar este momento a la historia?
+                        {hasPhoto
+                          ? "¡Listo!"
+                          : "¿Te parece sumar este momento a la historia?"}
                       </p>
                     )
                   }
@@ -285,7 +287,7 @@ export default function Story() {
           )}
           {scene === 27 && (
             <>
-              <Ornament />
+              <Logo />
               <p className="emotional closing">
                 Y seguimos escribiendo nuestra historia...
               </p>
@@ -314,7 +316,7 @@ export default function Story() {
                 <br />
                 <br />
                 Ahora, podés darme la mano, un beso o lo que quieras después
-                cuando llegamos... :)
+                cuando llegamos... 😉
               </p>
             </>
           )}
