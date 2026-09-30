@@ -20,7 +20,8 @@ export default function Story() {
     [error, setError] = useState(""),
     [tested, setTested] = useState(false),
     [hasPhoto, setHasPhoto] = useState(false),
-    [direction, setDirection] = useState<"next" | "prev">("next");
+    [direction, setDirection] = useState<"next" | "prev">("next"),
+    [selfieCamera, setSelfieCamera] = useState(false);
   const audio = useRef<AudioHandle>(null);
   const known = useCallback((exists: boolean) => setHasPhoto(exists), []);
   const fetchContent = useCallback(async () => {
@@ -41,7 +42,7 @@ export default function Story() {
       setScene(
         loadLocal<boolean>("story-complete", false)
           ? -1
-          : Number.isInteger(saved) && saved >= 0 && saved <= 28
+          : Number.isInteger(saved) && saved >= 0 && saved <= 29
             ? saved
             : 0,
       );
@@ -59,11 +60,7 @@ export default function Story() {
       const next = new Image();
       next.src = photoPath(2004 + scene - 4 + 1);
     }
-    if (scene === 27) {
-      const timer = setTimeout(() => setScene(28), 3000);
-      return () => clearTimeout(timer);
-    }
-    if (scene === 28) {
+    if (scene === 29) {
       saveLocal("story-complete", true);
       const timer = setTimeout(() => audio.current?.fade(), 7000);
       return () => clearTimeout(timer);
@@ -102,6 +99,18 @@ export default function Story() {
   return (
     <main className="experience">
       <AudioController ref={audio} />
+      {scene !== null && scene >= 4 && scene <= 26 && (
+        <div className="story-topbar" aria-hidden="true">
+          <img
+            className="corner-logo"
+            src="/logo_roumavis.png"
+            alt=""
+            width={500}
+            height={500}
+          />
+          <p className="eyebrow">Nuestra historia</p>
+        </div>
+      )}
       {scene === null ? (
         <Scene id="loading">
           <Logo />
@@ -110,13 +119,13 @@ export default function Story() {
       ) : (
         <Scene
           id={scene}
-          className={
+          className={`${
             scene >= 4 && scene <= 25
               ? direction === "next"
                 ? "slide-next"
                 : "slide-prev"
               : "fade"
-          }
+          }${scene >= 4 && scene <= 26 ? " history-layout" : ""}`}
         >
           {scene === -1 && (
             <>
@@ -182,7 +191,7 @@ export default function Story() {
             <>
               <p className="emotional">Hermosa canción... ¿no?</p>
               <p className="emotional small-text">
-                Ideal para disfrutarlo juntos... como vamos a disfrutar este
+                Ideal para disfrutarla juntos... como vamos a disfrutar este
                 finde.
                 <br />
                 <br />Y como venimos disfrutando durante...
@@ -225,14 +234,15 @@ export default function Story() {
               >
                 ›
               </button>
-              <p className="eyebrow">Nuestra historia</p>
-              <h1 className="history-year">{2004 + scene - 4}</h1>
-              <PhotoFrame
-                fill
-                key={scene}
-                src={photoPath(2004 + scene - 4)}
-                alt={`Nosotros en ${2004 + scene - 4}`}
-              />
+              <div className="history-photo-wrap">
+                <h1 className="year-badge">{2004 + scene - 4}</h1>
+                <PhotoFrame
+                  fill
+                  key={scene}
+                  src={photoPath(2004 + scene - 4)}
+                  alt={`Nosotros en ${2004 + scene - 4}`}
+                />
+              </div>
               {content.history[scene - 4]?.caption && (
                 <p className="history-caption">
                   {content.history[scene - 4].caption}
@@ -253,17 +263,23 @@ export default function Story() {
           )}
           {scene === 26 && (
             <>
-              <p className="eyebrow">Nuestra historia</p>
-              <h1 className="history-year">2026</h1>
-              <p className="emotional small-text">
-                ¿Te parece sumar este momento a la historia?
-              </p>
-              <RegisterMoment
-                slot="historia"
-                initialLabel="¡SELFIE!"
-                alwaysShow
-                onKnown={known}
-              />
+              <div className="history-photo-wrap">
+                <h1 className="year-badge">2026</h1>
+                <RegisterMoment
+                  slot="historia"
+                  initialLabel="📷 ¡SELFIE!"
+                  alwaysShow
+                  onKnown={known}
+                  onCamera={setSelfieCamera}
+                  lead={
+                    selfieCamera ? null : (
+                      <p className="emotional small-text">
+                        ¿Te parece sumar este momento a la historia?
+                      </p>
+                    )
+                  }
+                />
+              </div>
               {hasPhoto && <NextButton onClick={next} />}
             </>
           )}
@@ -273,6 +289,7 @@ export default function Story() {
               <p className="emotional closing">
                 Y seguimos escribiendo nuestra historia...
               </p>
+              <NextButton onClick={next} />
             </>
           )}
           {scene === 28 && (
@@ -284,8 +301,13 @@ export default function Story() {
                 Para que sea otro de esos momentos que recordemos siempre.
               </p>
               <p className="emotional">TE AMO ❤️</p>
-              <Ornament />
-              <p className="emotional small-text delayed-reveal">
+              <NextButton onClick={next} />
+            </>
+          )}
+          {scene === 29 && (
+            <>
+              <Logo />
+              <p className="emotional small-text">
                 Ah, igual esta no es la única sorpresa del finde...
                 <br />
                 ¡sólo es la primera!

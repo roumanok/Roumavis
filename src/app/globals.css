@@ -788,3 +788,65 @@ button.danger {
     transform: none;
   }
 }
+/* History layout: compact top bar, year badge resting on the frame */
+.experience {
+  position: relative;
+}
+.story-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(env(safe-area-inset-top) + 86px);
+  z-index: 2;
+  pointer-events: none;
+}
+.story-topbar .eyebrow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(env(safe-area-inset-top) + 36px);
+  margin: 0;
+  text-align: center;
+}
+.history-layout {
+  justify-content: flex-start;
+  padding-top: calc(env(safe-area-inset-top) + 96px);
+  gap: 18px;
+}
+.history-photo-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.year-badge {
+  position: absolute;
+  top: -21px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  margin: 0;
+  padding: 3px 20px 5px;
+  border-radius: 999px;
+  background: var(--wine);
+  color: var(--cream);
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  box-shadow: 0 4px 14px #581c2b30;
+  border: 2px solid #fffaf3;
+}
+.history-photo-wrap .register-moment {
+  gap: 16px;
+}
+@media (max-height: 750px) {
+  .history-swipe .photo-frame,
+  .history-photo-wrap .photo-frame {
+    max-width: 260px;
+  }
+}

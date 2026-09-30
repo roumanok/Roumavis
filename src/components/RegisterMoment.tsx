@@ -11,6 +11,7 @@ export default function RegisterMoment({
   onSaved,
   onKnown,
   onCamera,
+  lead,
 }: {
   slot: MomentSlot;
   initialLabel?: string;
@@ -19,6 +20,8 @@ export default function RegisterMoment({
   onKnown?: (exists: boolean) => void;
   /** Notified when the camera opens/closes (to hide surrounding content). */
   onCamera?: (open: boolean) => void;
+  /** Optional content shown between the photo and the buttons. */
+  lead?: React.ReactNode;
 }) {
   const [info, setInfo] = useState<MomentInfo | null>(null),
     [camera, setCamera] = useState(false),
@@ -80,6 +83,7 @@ export default function RegisterMoment({
               alt="Nuestro momento juntos"
             />
           )}
+          {lead}
           {info?.exists ? (
             <>
               {!open && (

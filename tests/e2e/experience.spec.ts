@@ -134,6 +134,7 @@ test("mobile story, calendar counter, camera fallback, completion and revisit", 
         page.getByRole("heading", { name: "2007", exact: true }),
       ).toBeVisible();
       await page.screenshot({ path: "test-results/history-swipe.png" });
+      await page.locator(".history-caption").count();
       await swipe(120);
       await expect(
         page.getByRole("heading", { name: "2006", exact: true }),
@@ -144,16 +145,21 @@ test("mobile story, calendar counter, camera fallback, completion and revisit", 
   await expect(
     page.getByRole("heading", { name: "2026", exact: true }),
   ).toBeVisible();
+  await page.screenshot({ path: "test-results/history-2026.png" });
   await page.getByRole("button", { name: "¡SELFIE!" }).click();
+  await expect(page.getByText("¿Te parece sumar")).toHaveCount(0);
   await page
     .locator("input[type=file]")
     .setInputFiles("public/logo_roumavis.png");
   await expect(page.getByText("¿La guardamos?")).toBeVisible();
   await page.getByRole("button", { name: "❤️ GUARDAR" }).click();
   await page.getByRole("button", { name: "Continuar", exact: true }).click();
-  await expect(page.getByText("TE AMO ❤️", { exact: true })).toBeVisible({
-    timeout: 10000,
-  });
+  await expect(page.getByText("Y seguimos escribiendo")).toBeVisible();
+  await page.getByRole("button", { name: "Continuar", exact: true }).click();
+  await expect(page.getByText("TE AMO ❤️", { exact: true })).toBeVisible();
+  await expect(page.getByText(/única sorpresa/)).toHaveCount(0);
+  await page.getByRole("button", { name: "Continuar", exact: true }).click();
+  await expect(page.getByText(/única sorpresa/)).toBeVisible();
   await page.reload();
   await expect(
     page.getByRole("heading", {
