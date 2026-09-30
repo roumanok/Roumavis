@@ -38,13 +38,8 @@ export async function makeCollage() {
   ctx.strokeStyle = "#C8AA7B";
   ctx.lineWidth = 2;
   ctx.strokeRect(36, 36, 1008, 1848);
-  ctx.drawImage(logo, 454, 58, 172, 172);
+  ctx.drawImage(logo, 390, 64, 300, 300);
   ctx.textAlign = "center";
-  ctx.fillStyle = "#581C2B";
-  ctx.font = '500 66px "Cormorant Garamond", Georgia';
-  ctx.fillText("NUESTRO FINDE", 540, 300);
-  ctx.font = "24px Manrope, sans-serif";
-  ctx.fillText("10 — 12 · OCT · 2026", 540, 349);
   // Polaroids whose photo window is 4:5, same as the captured selfies.
   // Three across the top, then "Buen día" and a larger final photo.
   const polaroid = (x: number, y: number, w: number, a: number) => ({
@@ -106,10 +101,10 @@ export async function makeCollage() {
     ctx.restore();
   });
   ctx.fillStyle = "#581C2B";
-  ctx.font = "26px Manrope, sans-serif";
-  ctx.fillText("#NuestroFinde", 540, 1782);
-  ctx.font = "18px Manrope, sans-serif";
-  ctx.fillText("Palmas de la Laguna · 2026", 540, 1820);
+  ctx.font = "600 46px Manrope, sans-serif";
+  ctx.fillText("#NuestroFinde", 540, 1748);
+  ctx.font = "30px Manrope, sans-serif";
+  ctx.fillText("Palmas de la Laguna · 2026", 540, 1806);
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve, "image/png"),
   );

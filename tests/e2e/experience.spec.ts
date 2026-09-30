@@ -210,9 +210,30 @@ test("survey survives reload and failed send; gallery exports a real story PNG",
     page.getByText("No hay conexión. Intentá otra vez."),
   ).toBeVisible();
   await page.getByRole("button", { name: "ENVIAR EVALUACIÓN" }).click();
+  // Final photo already registered: only logo, photo and the gallery button.
+  await expect(
+    page.getByRole("button", { name: "❤️ VER NUESTROS MOMENTOS" }),
+  ).toBeVisible();
+  await expect(page.getByText(/Gracias por participar/)).toHaveCount(0);
+  await page.screenshot({ path: "test-results/thanks.png" });
   await page.getByRole("button", { name: "❤️ VER NUESTROS MOMENTOS" }).click();
-  for (let i = 0; i < 5; i++)
-    await page.getByRole("button", { name: "Continuar", exact: true }).click();
+  await expect(page.getByText("Nuestros momentos · 1 / 5")).toBeVisible();
+  const swipe = page.locator(".history-swipe");
+  const box = (await swipe.boundingBox())!;
+  await swipe.dispatchEvent("touchstart", {
+    touches: [{ identifier: 1, clientX: box.x + 250, clientY: box.y + 200 }],
+  });
+  await swipe.dispatchEvent("touchend", {
+    changedTouches: [
+      { identifier: 1, clientX: box.x + 100, clientY: box.y + 205 },
+    ],
+  });
+  await expect(page.getByText("Nuestros momentos · 2 / 5")).toBeVisible();
+  await page.screenshot({ path: "test-results/moments.png" });
+  for (let i = 0; i < 4; i++)
+    await page.getByRole("button", { name: "Momento siguiente" }).click();
+  await expect(page.getByText(/ahora a planear/)).toBeVisible();
+  await page.screenshot({ path: "test-results/planear.png" });
   await page.getByRole("button", { name: "CREAR NUESTRO RECUERDO" }).click();
   const preview = page.getByAltText("Nuestro recuerdo en cinco fotos");
   await expect(preview).toBeVisible();
@@ -234,7 +255,9 @@ test("survey survives reload and failed send; gallery exports a real story PNG",
   expect(download.suggestedFilename()).toBe("nuestro-finde.png");
   await download.saveAs("test-results/nuestro-finde.png");
   await page.reload();
-  await expect(page.getByText(/Gracias por participar/)).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "❤️ VER NUESTROS MOMENTOS" }),
+  ).toBeVisible();
 });
 test("admin signs in on server, saves editable content and deletes a moment", async ({
   page,

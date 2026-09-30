@@ -134,9 +134,9 @@ export default function Survey() {
     return (
       <main className="experience">
         <Scene id="thanks">
-          {!cameraOpen && (
+          {!cameraOpen && <Logo small />}
+          {!cameraOpen && !finalPhoto && (
             <>
-              <Logo small />
               <p className="emotional">
                 Gracias por participar.
                 <br />
@@ -149,6 +149,8 @@ export default function Survey() {
             </>
           )}
           <RegisterMoment
+            key={finalPhoto ? "with-photo" : "empty"}
+            alwaysShow={finalPhoto}
             slot="encuesta"
             initialLabel="📷 REGISTRAR ÚLTIMO MOMENTO"
             onKnown={known}
