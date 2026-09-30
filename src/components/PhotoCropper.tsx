@@ -199,21 +199,6 @@ const PhotoCropper = forwardRef<PhotoCropperHandle, { src: string }>(
             />
           )}
         </div>
-        <label className="zoom-control">
-          <span aria-hidden="true">−</span>
-          <input
-            type="range"
-            min={1}
-            max={MAX_ZOOM}
-            step={0.01}
-            value={view.zoom}
-            aria-label="Zoom"
-            onChange={(e) =>
-              setView((v) => clamp({ ...v, zoom: Number(e.target.value) }))
-            }
-          />
-          <span aria-hidden="true">+</span>
-        </label>
       </div>
     );
   },

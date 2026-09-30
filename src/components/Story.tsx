@@ -271,18 +271,19 @@ export default function Story() {
                   alwaysShow
                   onKnown={known}
                   onCamera={setSelfieCamera}
+                  hideChange
                   lead={
-                    selfieCamera ? null : (
+                    selfieCamera || hasPhoto ? null : (
                       <p className="emotional small-text">
-                        {hasPhoto
-                          ? "¡Listo!"
-                          : "¿Te parece sumar este momento a la historia?"}
+                        ¿Te parece sumar este momento a la historia?
                       </p>
                     )
                   }
                 />
               </div>
-              {hasPhoto && <NextButton onClick={next} />}
+              {hasPhoto && !selfieCamera && (
+                <Button onClick={next}>¡LISTO!</Button>
+              )}
             </>
           )}
           {scene === 27 && (

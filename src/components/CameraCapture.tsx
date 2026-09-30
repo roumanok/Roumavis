@@ -172,7 +172,6 @@ export default function CameraCapture({
       {photo ? (
         <>
           <p className="crop-hint">Arrastrá o pellizcá para acomodarla</p>
-          <p className="emotional small-text">¿La guardamos?</p>
           <div className="actions">
             <Button
               className="secondary"
@@ -188,9 +187,22 @@ export default function CameraCapture({
         </>
       ) : (
         <>
-          <Button disabled={!ready} onClick={() => void capture()}>
-            SACAR FOTO
+          <Button
+            className="shutter"
+            disabled={!ready}
+            onClick={() => void capture()}
+          >
+            📷 SACAR FOTO
           </Button>
+          {!ready && (
+            <button className="text-button" onClick={() => void start()}>
+              Volver a abrir cámara
+            </button>
+          )}
+        </>
+      )}
+      <div className="camera-links">
+        {!photo ? (
           <label className="file-picker">
             Sacar o elegir una foto
             <input
@@ -203,23 +215,20 @@ export default function CameraCapture({
               }}
             />
           </label>
-          {!ready && (
-            <button className="text-button" onClick={() => void start()}>
-              Volver a abrir cámara
-            </button>
-          )}
-        </>
-      )}
-      <button
-        className="text-button"
-        disabled={saving}
-        onClick={() => {
-          stop();
-          onCancel();
-        }}
-      >
-        Cancelar
-      </button>
+        ) : (
+          <span />
+        )}
+        <button
+          className="text-button"
+          disabled={saving}
+          onClick={() => {
+            stop();
+            onCancel();
+          }}
+        >
+          Cancelar
+        </button>
+      </div>
     </div>
   );
 }

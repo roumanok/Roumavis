@@ -12,6 +12,7 @@ export default function RegisterMoment({
   onKnown,
   onCamera,
   lead,
+  hideChange = false,
 }: {
   slot: MomentSlot;
   initialLabel?: string;
@@ -22,6 +23,8 @@ export default function RegisterMoment({
   onCamera?: (open: boolean) => void;
   /** Optional content shown between the photo and the buttons. */
   lead?: React.ReactNode;
+  /** Hide "Cambiar foto" once a photo exists. */
+  hideChange?: boolean;
 }) {
   const [info, setInfo] = useState<MomentInfo | null>(null),
     [camera, setCamera] = useState(false),
@@ -72,16 +75,27 @@ export default function RegisterMoment({
       ) : (
         <>
           {open && (
-            <PhotoFrame
-              fill
-              key={info?.version ?? "empty"}
-              src={
-                info?.exists
-                  ? `/api/moments/${slot}?v=${encodeURIComponent(info.version ?? "")}`
-                  : undefined
-              }
-              alt="Nuestro momento juntos"
-            />
+            <div className="frame-with-action">
+              <PhotoFrame
+                fill
+                key={info?.version ?? "empty"}
+                src={
+                  info?.exists
+                    ? `/api/moments/${slot}?v=${encodeURIComponent(info.version ?? "")}`
+                    : undefined
+                }
+                alt="Nuestro momento juntos"
+              />
+              {!info?.exists && (
+                <Button
+                  className="in-frame"
+                  disabled={!info}
+                  onClick={() => setCamera(true)}
+                >
+                  {!info && !error ? "CARGANDO…" : initialLabel}
+                </Button>
+              )}
+            </div>
           )}
           {lead}
           {info?.exists ? (
@@ -91,11 +105,13 @@ export default function RegisterMoment({
                   Ver nuestro momento ❤️
                 </Button>
               )}
-              <button className="text-button" onClick={() => setCamera(true)}>
-                Cambiar foto
-              </button>
+              {!hideChange && (
+                <button className="text-button" onClick={() => setCamera(true)}>
+                  Cambiar foto
+                </button>
+              )}
             </>
-          ) : (
+          ) : open ? null : (
             <Button
               className="secondary"
               disabled={!info}

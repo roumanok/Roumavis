@@ -147,15 +147,19 @@ test("mobile story, calendar counter, camera fallback, completion and revisit", 
   ).toBeVisible();
   await page.screenshot({ path: "test-results/history-2026.png" });
   await page.getByRole("button", { name: "¡SELFIE!" }).click();
+  await page.screenshot({ path: "test-results/camera.png" });
   await expect(page.getByText("¿Te parece sumar")).toHaveCount(0);
   await page
     .locator("input[type=file]")
     .setInputFiles("public/logo_roumavis.png");
-  await expect(page.getByText("¿La guardamos?")).toBeVisible();
+  await expect(
+    page.getByText("Arrastrá o pellizcá para acomodarla"),
+  ).toBeVisible();
+  await page.screenshot({ path: "test-results/crop.png" });
   await page.getByRole("button", { name: "❤️ GUARDAR" }).click();
-  await expect(page.getByText("¡Listo!", { exact: true })).toBeVisible();
+  await expect(page.getByText("Cambiar foto")).toHaveCount(0);
   await page.screenshot({ path: "test-results/history-2026-saved.png" });
-  await page.getByRole("button", { name: "Continuar", exact: true }).click();
+  await page.getByRole("button", { name: "¡LISTO!" }).click();
   await expect(page.getByText("Y seguimos escribiendo")).toBeVisible();
   await page.screenshot({ path: "test-results/closing-1.png" });
   await page.getByRole("button", { name: "Continuar", exact: true }).click();

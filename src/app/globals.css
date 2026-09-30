@@ -850,3 +850,47 @@ button.danger {
 .history-photo-wrap .register-moment {
   gap: 16px;
 }
+/* Camera: compact controls */
+.button.shutter {
+  position: relative;
+  z-index: 2;
+  margin-top: -46px;
+  min-height: 60px;
+  padding: 0 34px;
+  font-size: 15px;
+  box-shadow: 0 6px 18px #581c2b40;
+  border: 3px solid #fffaf3;
+}
+.camera {
+  gap: 14px;
+}
+.camera-links {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -6px;
+}
+.camera-links .text-button {
+  margin: 0;
+}
+.frame-with-action {
+  position: relative;
+  width: 100%;
+}
+.button.in-frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  background: var(--wine);
+  color: var(--cream);
+  border-color: var(--wine);
+  box-shadow: 0 6px 18px #581c2b33;
+  white-space: nowrap;
+}
+.frame-with-action .empty-photo {
+  visibility: hidden;
+}
