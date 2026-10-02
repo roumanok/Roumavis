@@ -12,8 +12,15 @@ import {
 } from "@/lib/models";
 import RegisterMoment from "./RegisterMoment";
 import AdminHistoryPhoto from "./AdminHistoryPhoto";
+import AdminCards from "./AdminCards";
 import { Button, ErrorMessage, Logo } from "./ui";
-const sections = ["Historia", "Mensajes", "Momentos", "Encuesta"] as const;
+const sections = [
+  "Historia",
+  "Mensajes",
+  "Momentos",
+  "Encuesta",
+  "Tarjetas",
+] as const;
 function AdminMoment({ slot }: { slot: MomentSlot }) {
   const [version, setVersion] = useState(0),
     [exists, setExists] = useState(false),
@@ -341,6 +348,7 @@ export default function AdminPanel() {
           ))}
         </div>
       )}
+      {tab === "Tarjetas" && <AdminCards />}
       {tab === "Encuesta" &&
         (survey ? (
           <section>
