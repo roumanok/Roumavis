@@ -4,6 +4,7 @@ import "@fontsource/cormorant-garamond/latin-500.css";
 import "@fontsource/cormorant-garamond/latin-400-italic.css";
 import "@fontsource/manrope/latin-400.css";
 import "@fontsource/manrope/latin-600.css";
+import "@fontsource/oswald/latin-500.css";
 import "./globals.css";
 export const metadata: Metadata = {
   title: "Roumavis · Nuestro finde",

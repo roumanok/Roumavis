@@ -239,24 +239,132 @@ h2 {
 .counter {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px 22px;
-  min-height: 145px;
+  gap: 18px 14px;
+  min-height: 200px;
   width: 100%;
-  max-width: 330px;
+  max-width: 300px;
+  justify-items: center;
   margin: 6px 0;
 }
-.counter strong {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: 44px;
-  line-height: 1;
-  display: block;
-  font-variant-numeric: tabular-nums;
+.counter-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
-.counter span {
+.counter-cell > span {
   font-size: 10px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  font-weight: 600;
+}
+/* Flip clock card: wine housing, cream digits, hinge across the middle. */
+.flip {
+  --flip-h: 66px;
+  position: relative;
+  width: 82px;
+  height: var(--flip-h);
+  border-radius: 9px;
+  perspective: 320px;
+  font-family: "Oswald", "Arial Narrow", "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  font-size: 46px;
+  font-variant-numeric: tabular-nums;
+  color: #fbf4ea;
+  box-shadow:
+    0 3px 6px #581c2b33,
+    0 10px 20px #581c2b26;
+}
+.flip-half {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #6b2335, #581c2b);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-half span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--flip-h);
+  line-height: var(--flip-h);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+.flip-top {
+  top: 0;
+  border-radius: 9px 9px 0 0;
+  transform-origin: 50% 100%;
+  border-bottom: 1px solid #2e0d16;
+}
+.flip-top span {
+  top: 0;
+}
+.flip-bottom {
+  bottom: 0;
+  border-radius: 0 0 9px 9px;
+  transform-origin: 50% 0;
+  background: linear-gradient(180deg, #521a28, #4a1724);
+}
+.flip-bottom span {
+  bottom: 0;
+}
+/* Subtle side "pins" where the cards hang, like the real clocks. */
+.flip::before,
+.flip::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 4px);
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  background: #2e0d16;
+  z-index: 3;
+}
+.flip::before {
+  left: 2px;
+}
+.flip::after {
+  right: 2px;
+}
+.flap-out {
+  z-index: 2;
+  animation: flap-out 0.31s ease-in forwards;
+}
+.flap-in {
+  z-index: 2;
+  transform: rotateX(90deg);
+  animation: flap-in 0.31s 0.31s ease-out forwards;
+}
+@keyframes flap-out {
+  from {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+  to {
+    transform: rotateX(-90deg);
+    filter: brightness(0.75);
+  }
+}
+@keyframes flap-in {
+  from {
+    transform: rotateX(90deg);
+    filter: brightness(1.15);
+  }
+  to {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+}
+@media (max-width: 360px) {
+  .flip {
+    --flip-h: 58px;
+    width: 72px;
+    font-size: 40px;
+  }
 }
 .photo-frame {
   padding: 10px 10px 18px;
@@ -1125,4 +1233,10 @@ button.danger {
   align-items: center;
   gap: 22px;
   animation: arrive 0.8s 0.3s ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flap-out,
+  .flap-in {
+    display: none;
+  }
 }
