@@ -5,6 +5,7 @@ import { defaults, photoPath, type ContentResponse } from "@/lib/models";
 import AudioController, { type AudioHandle } from "./AudioController";
 import Counter from "./Counter";
 import RegisterMoment from "./RegisterMoment";
+import WineIntro from "./WineIntro";
 import {
   Button,
   ErrorMessage,
@@ -153,15 +154,13 @@ export default function Story() {
             </>
           )}
           {scene === 0 && (
-            <>
-              <Logo />
-              <Ornament />
+            <WineIntro>
               <h1>
                 Bienvenida a un finde <em>NUESTRO...</em>
               </h1>
               <p className="emotional">¿Estás lista?</p>
               <Button onClick={next}>¡SÍ!</Button>
-            </>
+            </WineIntro>
           )}
           {scene === 1 && (
             <>

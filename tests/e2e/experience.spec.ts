@@ -95,7 +95,24 @@ test("mobile story, calendar counter, camera fallback, completion and revisit", 
 }) => {
   await fixtures(page);
   await enter(page);
+  // Opening ritual: fill the glass, tap the heart, then the welcome appears.
+  const glass = page.getByRole("button", { name: "Tocá para llenar la copa" });
+  await expect(glass).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Bienvenida/ })).toHaveCount(
+    0,
+  );
+  for (let i = 0; i < 7; i++) {
+    await glass.click();
+    if (i === 3) await page.screenshot({ path: "test-results/wine-half.png" });
+    await page.waitForTimeout(120);
+  }
+  const heart = page.getByRole("button", { name: "Tocá el corazón" });
+  await expect(heart).toBeVisible({ timeout: 5000 });
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: "test-results/wine-heart.png" });
+  await heart.click();
   await expect(page.getByRole("heading", { name: /Bienvenida/ })).toBeVisible();
+  await page.waitForTimeout(1200);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

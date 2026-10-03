@@ -911,3 +911,205 @@ button.danger {
 .card-links a {
   text-decoration: underline;
 }
+/* Opening ritual: wine glass → heart → logo */
+.wine-intro {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.wine-stage {
+  position: relative;
+  width: min(72vw, 300px);
+  max-width: 100%;
+  aspect-ratio: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.wine-stage.is-done {
+  cursor: default;
+  width: min(60vw, 230px);
+  transition: width 0.7s ease;
+}
+.wine-stage:focus-visible {
+  outline: 3px solid var(--champagne);
+  outline-offset: 4px;
+}
+.wine-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.wine-glass {
+  transform-origin: 50% 85%;
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.wine-glass.tap-a {
+  animation: wine-nudge-a 0.32s ease;
+}
+.wine-glass.tap-b {
+  animation: wine-nudge-b 0.32s ease;
+}
+@keyframes wine-nudge-a {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.035) rotate(-1.2deg);
+  }
+  70% {
+    transform: scale(0.99) rotate(0.8deg);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes wine-nudge-b {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.035) rotate(-1.2deg);
+  }
+  70% {
+    transform: scale(0.99) rotate(0.8deg);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.wine-glass.leaving {
+  animation: wine-glass-out 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes wine-glass-out {
+  to {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+}
+.wine-fill {
+  transition:
+    y 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.wine-wave {
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.wine-wave.slosh-a {
+  animation: wine-slosh-a 0.55s ease-out;
+}
+.wine-wave.slosh-b {
+  animation: wine-slosh-b 0.55s ease-out;
+}
+@keyframes wine-slosh-a {
+  30% {
+    translate: -7px 0;
+  }
+  60% {
+    translate: 5px 0;
+  }
+}
+@keyframes wine-slosh-b {
+  30% {
+    translate: -7px 0;
+  }
+  60% {
+    translate: 5px 0;
+  }
+}
+.wine-heart {
+  animation: wine-heart-in 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.wine-heart.beat path {
+  animation: wine-beat 1.4s 0.75s ease-in-out infinite;
+  transform-origin: 50% 55%;
+}
+.wine-heart.leaving {
+  animation: wine-heart-out 0.65s ease forwards;
+}
+@keyframes wine-heart-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes wine-heart-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+@keyframes wine-beat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.06);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.04);
+  }
+}
+.wine-logo {
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  animation: wine-logo-in 0.75s ease both;
+}
+@keyframes wine-logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.wine-captions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 5.2em;
+}
+.wine-caption {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 6.5vw, 2rem);
+  line-height: 1.25;
+  margin: 0;
+  animation: soft-arrive 0.4s ease both;
+}
+.wine-hint {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #71545a;
+  margin: 0;
+  min-height: 1.4em;
+}
+.wine-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  animation: arrive 0.8s 0.3s ease both;
+}
