@@ -167,16 +167,29 @@ h2 {
   font-size: 12px;
   font-weight: 600;
   max-width: 100%;
+  box-shadow:
+    0 2px 4px #581c2b1f,
+    0 6px 14px #581c2b26;
   transition:
     background 0.2s,
-    transform 0.2s;
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 .button:active {
   transform: scale(0.97);
+  box-shadow:
+    0 1px 2px #581c2b1f,
+    0 2px 6px #581c2b1f;
+}
+.button:disabled {
+  box-shadow: none;
 }
 .button.secondary {
-  background: transparent;
+  background: #fffaf3b3;
   color: var(--wine);
+  box-shadow:
+    0 1px 3px #581c2b14,
+    0 4px 10px #581c2b14;
 }
 .button.next {
   width: 56px;
