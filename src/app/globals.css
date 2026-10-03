@@ -566,8 +566,61 @@ h2 {
   min-height: 58px;
   transition: transform 0.2s;
 }
+.hearts button:disabled {
+  opacity: 1;
+}
 .hearts button.selected {
+  color: var(--wine);
   transform: scale(1.08);
+  text-shadow: 0 3px 8px #581c2b40;
+  animation: heart-pop 0.38s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+@keyframes heart-pop {
+  0% {
+    transform: scale(0.7);
+  }
+  60% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+/* Confetti burst for a 5-heart rating */
+.confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 20;
+}
+.confetti-bit,
+.confetti-heart {
+  position: absolute;
+  top: -24px;
+  line-height: 1;
+  border-radius: 2px;
+  animation-name: confetti-fall;
+  animation-timing-function: cubic-bezier(0.25, 0.6, 0.5, 1);
+  animation-fill-mode: both;
+}
+@keyframes confetti-fall {
+  0% {
+    transform: translate(0, 0) rotate(0);
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--drift), 105vh) rotate(var(--spin));
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti {
+    display: none;
+  }
 }
 .progress {
   display: flex;

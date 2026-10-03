@@ -5,6 +5,7 @@ import { api, loadLocal, saveLocal, syncReset } from "@/lib/client";
 import { questions, repeats, type SurveyInput } from "@/lib/models";
 import RegisterMoment from "./RegisterMoment";
 import TapRitual from "./TapRitual";
+import Confetti from "./Confetti";
 import MomentViewer from "./MomentViewer";
 import { Button, ErrorMessage, Logo, Ornament, Scene } from "./ui";
 const draftSchema = z.object({
@@ -37,7 +38,8 @@ export default function Survey() {
     [choosing, setChoosing] = useState(false),
     [leaving, setLeaving] = useState(false),
     [cameraOpen, setCameraOpen] = useState(false),
-    [ritualDone, setRitualDone] = useState(false);
+    [ritualDone, setRitualDone] = useState(false),
+    [burst, setBurst] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null),
     sending = useRef(false),
     choosingRef = useRef(false);
@@ -89,7 +91,9 @@ export default function Survey() {
       ...draft,
       ratings: draft.ratings.map((r, i) => (i === index ? value : r)),
     });
-    timer.current = setTimeout(() => step(index + 2), 450);
+    if (value === 5) setBurst((b) => b + 1);
+    // Give a perfect score a moment to celebrate before moving on.
+    timer.current = setTimeout(() => step(index + 2), value === 5 ? 1300 : 550);
   }
   async function submit() {
     if (!draft || sending.current) return;
@@ -169,6 +173,7 @@ export default function Survey() {
     );
   return (
     <main className="experience survey">
+      {burst > 0 && choosing && <Confetti key={burst} seed={burst} />}
       {draft.step >= 1 && draft.step <= 11 && (
         <img
           className="corner-logo"
@@ -238,6 +243,7 @@ export default function Survey() {
                   aria-label={`${value} ${value === 1 ? "corazón" : "corazones"}`}
                   aria-pressed={value === draft.ratings[draft.step - 1]}
                   disabled={choosing}
+                  style={{ animationDelay: `${(value - 1) * 60}ms` }}
                   onClick={() => rate(value)}
                 >
                   {value <= draft.ratings[draft.step - 1] ? "♥" : "♡"}
