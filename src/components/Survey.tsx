@@ -4,6 +4,7 @@ import { z } from "zod";
 import { api, loadLocal, saveLocal, syncReset } from "@/lib/client";
 import { questions, repeats, type SurveyInput } from "@/lib/models";
 import RegisterMoment from "./RegisterMoment";
+import TapRitual from "./TapRitual";
 import MomentViewer from "./MomentViewer";
 import { Button, ErrorMessage, Logo, Ornament, Scene } from "./ui";
 const draftSchema = z.object({
@@ -35,7 +36,8 @@ export default function Survey() {
     [finalPhoto, setFinalPhoto] = useState(false),
     [choosing, setChoosing] = useState(false),
     [leaving, setLeaving] = useState(false),
-    [cameraOpen, setCameraOpen] = useState(false);
+    [cameraOpen, setCameraOpen] = useState(false),
+    [ritualDone, setRitualDone] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null),
     sending = useRef(false),
     choosingRef = useRef(false);
@@ -56,6 +58,7 @@ export default function Survey() {
       if (!alive) return;
       const parsed = draftSchema.safeParse(loadLocal<unknown>("survey", null));
       setDraft(parsed.success ? parsed.data : fresh());
+      setRitualDone(loadLocal<boolean>("ritual-encuesta", false));
       void check();
     });
     return () => {
@@ -180,29 +183,38 @@ export default function Survey() {
         id={`survey-${draft.step}`}
         className={leaving ? "soft leaving" : "soft"}
       >
-        {draft.step === 0 && (
-          <>
-            <img
-              className="logo survey-logo"
-              src="/logo_roumavis.png"
-              alt="Roumavis: nosotros dos"
-              width={500}
-              height={500}
+        {draft.step === 0 &&
+          (ritualDone ? (
+            <>
+              <img
+                className="logo survey-logo"
+                src="/logo_roumavis.png"
+                alt="Roumavis: nosotros dos"
+                width={500}
+                height={500}
+              />
+              <p className="emotional">
+                El finde llegó a su fin, así que es hora de....
+              </p>
+              <h1>¡La encuesta de satisfacción!</h1>
+              <Ornament />
+              <p className="meta meta-lg">
+                Fecha: 10–12 de octubre de 2026
+                <br />
+                Participantes: 2<br />
+                Hijas presentes: 0 😂
+              </p>
+              <Button onClick={() => step(1)}>COMENZAR</Button>
+            </>
+          ) : (
+            <TapRitual
+              kind="heart-survey"
+              onDone={() => {
+                saveLocal("ritual-encuesta", true);
+                setRitualDone(true);
+              }}
             />
-            <p className="emotional">
-              El finde llegó a su fin, así que es hora de....
-            </p>
-            <h1>¡La encuesta de satisfacción!</h1>
-            <Ornament />
-            <p className="meta meta-lg">
-              Fecha: 10–12 de octubre de 2026
-              <br />
-              Participantes: 2<br />
-              Hijas presentes: 0 😂
-            </p>
-            <Button onClick={() => step(1)}>COMENZAR</Button>
-          </>
-        )}
+          ))}
         {draft.step >= 1 && draft.step <= 9 && (
           <>
             <p className="eyebrow">La encuesta · {draft.step} de 9</p>

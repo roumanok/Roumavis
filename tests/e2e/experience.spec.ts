@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { defaults, questions } from "../../src/lib/models";
+import { playRitual } from "./ritual";
 const key = "e2e-only-qr-key-not-for-production-123456789";
 async function enter(page: Page, path = "/") {
   await page.goto(`/acceso?k=${key}&destino=${encodeURIComponent(path)}`);
@@ -95,22 +96,11 @@ test("mobile story, calendar counter, camera fallback, completion and revisit", 
 }) => {
   await fixtures(page);
   await enter(page);
-  // Opening ritual: fill the glass, tap the heart, then the welcome appears.
-  const glass = page.getByRole("button", { name: "Tocá para llenar la copa" });
-  await expect(glass).toBeVisible();
+  // Opening ritual: fill the heart, tap it, then the welcome appears.
   await expect(page.getByRole("heading", { name: /Bienvenida/ })).toHaveCount(
     0,
   );
-  for (let i = 0; i < 7; i++) {
-    await glass.click();
-    if (i === 3) await page.screenshot({ path: "test-results/wine-half.png" });
-    await page.waitForTimeout(120);
-  }
-  const heart = page.getByRole("button", { name: "Tocá el corazón" });
-  await expect(heart).toBeVisible({ timeout: 5000 });
-  await page.waitForTimeout(400);
-  await page.screenshot({ path: "test-results/wine-heart.png" });
-  await heart.click();
+  await playRitual(page, /llenar el corazón/, 7, "heart");
   await expect(page.getByRole("heading", { name: /Bienvenida/ })).toBeVisible();
   await page.waitForTimeout(1200);
   expect(
@@ -195,6 +185,7 @@ test("survey survives reload and failed send; gallery exports a real story PNG",
 }) => {
   await fixtures(page, { photos: true });
   await enter(page, "/encuesta");
+  await playRitual(page, /llenar el corazón/, 7);
   await page.getByRole("button", { name: "COMENZAR", exact: true }).click();
   for (let i = 0; i < questions.length; i++) {
     await expect(

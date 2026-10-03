@@ -5,7 +5,7 @@ import { defaults, photoPath, type ContentResponse } from "@/lib/models";
 import AudioController, { type AudioHandle } from "./AudioController";
 import Counter from "./Counter";
 import RegisterMoment from "./RegisterMoment";
-import WineIntro from "./WineIntro";
+import TapRitual from "./TapRitual";
 import Carousel from "./Carousel";
 import {
   Button,
@@ -22,7 +22,8 @@ export default function Story() {
     [error, setError] = useState(""),
     [tested, setTested] = useState(false),
     [hasPhoto, setHasPhoto] = useState(false),
-    [selfieCamera, setSelfieCamera] = useState(false);
+    [selfieCamera, setSelfieCamera] = useState(false),
+    [introDone, setIntroDone] = useState(false);
   const audio = useRef<AudioHandle>(null);
   const known = useCallback((exists: boolean) => setHasPhoto(exists), []);
   const fetchContent = useCallback(async () => {
@@ -111,6 +112,7 @@ export default function Story() {
                 onClick={() => {
                   saveLocal("story-complete", false);
                   setTested(false);
+                  setIntroDone(false);
                   setScene(0);
                 }}
               >
@@ -118,15 +120,19 @@ export default function Story() {
               </button>
             </>
           )}
-          {scene === 0 && (
-            <WineIntro>
-              <h1>
-                Bienvenida a un finde <em>NUESTRO...</em>
-              </h1>
-              <p className="emotional">¿Estás lista?</p>
-              <Button onClick={next}>¡SÍ!</Button>
-            </WineIntro>
-          )}
+          {scene === 0 &&
+            (introDone ? (
+              <div className="wine-welcome">
+                <Logo />
+                <h1>
+                  Bienvenida a un finde <em>NUESTRO...</em>
+                </h1>
+                <p className="emotional">¿Estás lista?</p>
+                <Button onClick={next}>¡SÍ!</Button>
+              </div>
+            ) : (
+              <TapRitual kind="heart" onDone={() => setIntroDone(true)} />
+            ))}
           {scene === 1 && (
             <>
               <Logo small />

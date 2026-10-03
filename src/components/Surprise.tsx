@@ -1,10 +1,16 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { api } from "@/lib/client";
+import { api, loadLocal, saveLocal } from "@/lib/client";
 import { defaults, type ContentResponse } from "@/lib/models";
 import RegisterMoment from "./RegisterMoment";
+import TapRitual, { type RitualKind } from "./TapRitual";
 import { Button, ErrorMessage, Scene } from "./ui";
 type Stage = "intro" | "moment" | "bye";
+const RITUAL: Record<"vista" | "cama" | "mesita", RitualKind> = {
+  vista: "bottle",
+  cama: "bonbons",
+  mesita: "sun",
+};
 export default function Surprise({
   slot,
 }: {
@@ -13,7 +19,8 @@ export default function Surprise({
   const [text, setText] = useState(defaults[slot].text),
     [error, setError] = useState(""),
     [stage, setStage] = useState<Stage>("intro"),
-    [saved, setSaved] = useState(false);
+    [saved, setSaved] = useState(false),
+    [ritual, setRitual] = useState<"pending" | "show" | "done">("pending");
   const savedRef = useRef(false);
   const load = useCallback(async () => {
     try {
@@ -29,6 +36,11 @@ export default function Surprise({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
+  // The tap ritual is shown once per device (until the admin resets).
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setRitual(loadLocal<boolean>(`ritual-${slot}`, false) ? "done" : "show");
+  }, [slot]);
   // Opening the camera hides the message; cancelling without saving restores it.
   const onCamera = useCallback((open: boolean) => {
     if (open) setStage("moment");
@@ -48,6 +60,22 @@ export default function Surprise({
       height={500}
     />
   );
+  if (ritual !== "done")
+    return (
+      <main className="experience">
+        <Scene id={`${slot}-ritual`}>
+          {ritual === "show" && (
+            <TapRitual
+              kind={RITUAL[slot]}
+              onDone={() => {
+                saveLocal(`ritual-${slot}`, true);
+                setRitual("done");
+              }}
+            />
+          )}
+        </Scene>
+      </main>
+    );
   if (stage === "bye")
     return (
       <main className="experience">

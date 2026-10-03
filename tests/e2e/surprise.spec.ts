@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { defaults } from "../../src/lib/models";
+import { playRitual } from "./ritual";
 const key = "e2e-only-qr-key-not-for-production-123456789";
 test("surprise flow", async ({ page }) => {
   let exists = false;
@@ -17,6 +18,7 @@ test("surprise flow", async ({ page }) => {
     return r.fulfill({ path: "public/logo_roumavis.png" });
   });
   await page.goto(`/acceso?k=${key}&destino=/cama`);
+  await playRitual(page, /caja de bombones/, 6, "bonbons");
   await expect(
     page.getByRole("button", { name: /REGISTRAR MOMENTO/ }),
   ).toBeVisible({ timeout: 8000 });
@@ -39,3 +41,27 @@ test("surprise flow", async ({ page }) => {
   await expect(page.getByText(/Hasta la próxima sorpresa/)).toBeVisible();
   await page.screenshot({ path: "test-results/s4.png" });
 });
+
+for (const [slot, label, shot] of [
+  ["vista", /llenar la botella/, "bottle"],
+  ["mesita", /despertar el sol/, "sun"],
+] as const) {
+  test(`ritual ${slot}`, async ({ page }) => {
+    await page.route("**/api/content", (r) =>
+      r.fulfill({ json: { content: defaults, version: null } }),
+    );
+    await page.route("**/api/moments/**", (r) =>
+      r.fulfill({ json: { exists: false, version: null } }),
+    );
+    await page.goto(`/acceso?k=${key}&destino=/${slot}`);
+    await playRitual(page, label, 7, shot);
+    await expect(
+      page.getByRole("button", { name: /REGISTRAR MOMENTO/ }),
+    ).toBeVisible({ timeout: 8000 });
+    // Second visit skips the ritual.
+    await page.reload();
+    await expect(
+      page.getByRole("button", { name: /REGISTRAR MOMENTO/ }),
+    ).toBeVisible({ timeout: 8000 });
+  });
+}
