@@ -6,6 +6,7 @@ import AudioController, { type AudioHandle } from "./AudioController";
 import Counter from "./Counter";
 import RegisterMoment from "./RegisterMoment";
 import WineIntro from "./WineIntro";
+import Carousel from "./Carousel";
 import {
   Button,
   ErrorMessage,
@@ -21,7 +22,6 @@ export default function Story() {
     [error, setError] = useState(""),
     [tested, setTested] = useState(false),
     [hasPhoto, setHasPhoto] = useState(false),
-    [direction, setDirection] = useState<"next" | "prev">("next"),
     [selfieCamera, setSelfieCamera] = useState(false);
   const audio = useRef<AudioHandle>(null);
   const known = useCallback((exists: boolean) => setHasPhoto(exists), []);
@@ -67,39 +67,10 @@ export default function Story() {
       return () => clearTimeout(timer);
     }
   }, [scene]);
-  const next = () => {
-    setDirection("next");
-    setScene((value) => (value ?? 0) + 1);
-  };
-  const previous = () => {
-    setDirection("prev");
-    setScene((value) => Math.max(4, (value ?? 4) - 1));
-  };
-  // Horizontal swipe between history years (vertical scrolling still works).
-  const touch = useRef<{ x: number; y: number; t: number } | null>(null);
-  function onTouchStart(e: React.TouchEvent) {
-    const t = e.touches[0];
-    touch.current = { x: t.clientX, y: t.clientY, t: Date.now() };
-  }
-  function onTouchEnd(e: React.TouchEvent) {
-    const start = touch.current;
-    touch.current = null;
-    if (!start || scene === null) return;
-    const t = e.changedTouches[0];
-    const dx = t.clientX - start.x,
-      dy = t.clientY - start.y;
-    if (
-      Math.abs(dx) < 45 ||
-      Math.abs(dx) < Math.abs(dy) * 1.4 ||
-      Date.now() - start.t > 900
-    )
-      return;
-    if (dx < 0) next();
-    else if (scene > 4) previous();
-  }
+  const next = () => setScene((value) => (value ?? 0) + 1);
   return (
     <main className="experience">
-      <AudioController ref={audio} />
+      <AudioController ref={audio} idleButton={scene !== null && scene >= 2} />
       {scene !== null && scene >= 4 && scene <= 26 && (
         <div className="story-topbar" aria-hidden="true">
           <img
@@ -119,14 +90,8 @@ export default function Story() {
         </Scene>
       ) : (
         <Scene
-          id={scene}
-          className={`${
-            scene >= 4 && scene <= 25
-              ? direction === "next"
-                ? "slide-next"
-                : "slide-prev"
-              : "fade"
-          }${scene >= 4 && scene <= 26 ? " history-layout" : ""}`}
+          id={scene >= 4 && scene <= 25 ? "history" : scene}
+          className={`fade${scene >= 4 && scene <= 26 ? " history-layout" : ""}`}
         >
           {scene === -1 && (
             <>
@@ -212,53 +177,32 @@ export default function Story() {
             </>
           )}
           {scene >= 4 && scene <= 25 && (
-            <div
-              className="history-swipe"
-              onTouchStart={onTouchStart}
-              onTouchEnd={onTouchEnd}
-            >
-              {scene > 4 && (
-                <button
-                  className="float-arrow left"
-                  aria-label="Año anterior"
-                  onClick={previous}
-                >
-                  ‹
-                </button>
+            <Carousel
+              label="Nuestra historia año por año"
+              prevLabel="Año anterior"
+              nextLabel="Año siguiente"
+              index={scene - 4}
+              count={22}
+              onIndex={(i) => setScene(4 + i)}
+              onEnd={next}
+              render={(i) => (
+                <div className="history-slide">
+                  <div className="history-photo-wrap">
+                    <h1 className="year-badge">{2004 + i}</h1>
+                    <PhotoFrame
+                      fill
+                      src={photoPath(2004 + i)}
+                      alt={`Nosotros en ${2004 + i}`}
+                    />
+                  </div>
+                  {content.history[i]?.caption && (
+                    <p className="history-caption">
+                      {content.history[i].caption}
+                    </p>
+                  )}
+                </div>
               )}
-              <button
-                className="float-arrow right"
-                aria-label="Año siguiente"
-                onClick={next}
-              >
-                ›
-              </button>
-              <div className="history-photo-wrap">
-                <h1 className="year-badge">{2004 + scene - 4}</h1>
-                <PhotoFrame
-                  fill
-                  key={scene}
-                  src={photoPath(2004 + scene - 4)}
-                  alt={`Nosotros en ${2004 + scene - 4}`}
-                />
-              </div>
-              {content.history[scene - 4]?.caption && (
-                <p className="history-caption">
-                  {content.history[scene - 4].caption}
-                </p>
-              )}
-              {!tested && (
-                <button
-                  className="text-button"
-                  onClick={() => {
-                    void audio.current?.play();
-                    setTested(true);
-                  }}
-                >
-                  ♪ Acompañar con música
-                </button>
-              )}
-            </div>
+            />
           )}
           {scene === 26 && (
             <>

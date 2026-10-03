@@ -1240,3 +1240,40 @@ button.danger {
     display: none;
   }
 }
+/* Photo slider: slides move side by side, following the finger. */
+.carousel {
+  width: 100%;
+}
+.carousel-viewport {
+  display: grid;
+  width: 100vw;
+  max-width: 540px;
+  margin-inline: calc(50% - min(50vw, 270px));
+  overflow: hidden;
+  padding-block: 26px 10px;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.carousel-slide {
+  grid-area: 1 / 1;
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: 14px;
+  will-change: transform;
+}
+.carousel-slide[aria-hidden="true"] {
+  pointer-events: none;
+}
+.history-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.carousel img {
+  -webkit-user-drag: none;
+}
+.history-layout:has(.carousel) {
+  padding-top: calc(env(safe-area-inset-top) + 70px);
+}

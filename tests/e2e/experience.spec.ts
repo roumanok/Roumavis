@@ -136,15 +136,14 @@ test("mobile story, calendar counter, camera fallback, completion and revisit", 
     if (year === 2006) {
       // Swipe left → next year; swipe right → back.
       const swipe = async (dx: number) => {
-        const box = (await page.locator(".history-swipe").boundingBox())!;
+        const box = (await page.locator(".carousel-viewport").boundingBox())!;
         const x = box.x + box.width / 2,
           y = box.y + box.height / 2;
-        await page.locator(".history-swipe").dispatchEvent("touchstart", {
-          touches: [{ identifier: 1, clientX: x, clientY: y }],
-        });
-        await page.locator(".history-swipe").dispatchEvent("touchend", {
-          changedTouches: [{ identifier: 1, clientX: x + dx, clientY: y + 4 }],
-        });
+        await page.mouse.move(x, y);
+        await page.mouse.down();
+        await page.mouse.move(x + dx / 2, y + 2, { steps: 4 });
+        await page.mouse.move(x + dx, y + 4, { steps: 4 });
+        await page.mouse.up();
       };
       await swipe(-120);
       await expect(
@@ -235,17 +234,17 @@ test("survey survives reload and failed send; gallery exports a real story PNG",
   await page.screenshot({ path: "test-results/thanks.png" });
   await page.getByRole("button", { name: "❤️ VER NUESTROS MOMENTOS" }).click();
   await expect(page.getByText("Nuestros momentos · 1 / 5")).toBeVisible();
-  const swipe = page.locator(".history-swipe");
-  const box = (await swipe.boundingBox())!;
-  await swipe.dispatchEvent("touchstart", {
-    touches: [{ identifier: 1, clientX: box.x + 250, clientY: box.y + 200 }],
-  });
-  await swipe.dispatchEvent("touchend", {
-    changedTouches: [
-      { identifier: 1, clientX: box.x + 100, clientY: box.y + 205 },
-    ],
-  });
-  await expect(page.getByText("Nuestros momentos · 2 / 5")).toBeVisible();
+  const vp = (await page.locator(".carousel-viewport").boundingBox())!;
+  await page.mouse.move(vp.x + 250, vp.y + 200);
+  await page.mouse.down();
+  await page.mouse.move(vp.x + 170, vp.y + 202, { steps: 4 });
+  await page.mouse.move(vp.x + 90, vp.y + 205, { steps: 4 });
+  await page.mouse.up();
+  await expect(
+    page
+      .locator('.carousel-slide[aria-hidden="false"]')
+      .getByText("Nuestros momentos · 2 / 5"),
+  ).toBeVisible();
   await page.screenshot({ path: "test-results/moments.png" });
   for (let i = 0; i < 4; i++)
     await page.getByRole("button", { name: "Momento siguiente" }).click();
