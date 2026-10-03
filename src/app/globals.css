@@ -1277,7 +1277,7 @@ button.danger {
 .history-layout:has(.carousel) {
   padding-top: calc(env(safe-area-inset-top) + 70px);
 }
-/* Tap rituals (heart / bottle / bonbons / sun) */
+/* Tap rituals (heart / glass / bonbons / sun) */
 .ritual {
   width: 100%;
   display: flex;
@@ -1364,7 +1364,7 @@ button.danger {
   filter: drop-shadow(0 0 18px #e8c98ecc);
   transition: filter 0.6s ease;
 }
-.ritual-bottle .is-full svg,
+.ritual-glass .is-full svg,
 .ritual-bonbons .is-full svg {
   animation: ritual-pop 0.6s ease;
 }

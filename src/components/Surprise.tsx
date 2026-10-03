@@ -7,7 +7,7 @@ import TapRitual, { type RitualKind } from "./TapRitual";
 import { Button, ErrorMessage, Scene } from "./ui";
 type Stage = "intro" | "moment" | "bye";
 const RITUAL: Record<"vista" | "cama" | "mesita", RitualKind> = {
-  vista: "bottle",
+  vista: "glass",
   cama: "bonbons",
   mesita: "sun",
 };

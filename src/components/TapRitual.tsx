@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-export type RitualKind =
-  "heart" | "heart-survey" | "bottle" | "bonbons" | "sun";
+export type RitualKind = "heart" | "heart-survey" | "glass" | "bonbons" | "sun";
 
 type Config = {
   taps: number;
@@ -41,10 +40,10 @@ const CONFIG: Record<RitualKind, Config> = {
     tapWhenFull: true,
     label: "Tocá para llenar el corazón",
   },
-  bottle: {
+  glass: {
     taps: 7,
     lines: [
-      "Tocá la botella",
+      "Tocá la copa",
       "Un poquito más…",
       "Eso.",
       "Seguí, seguí.",
@@ -52,10 +51,10 @@ const CONFIG: Record<RitualKind, Config> = {
       "Un último toque",
       "Ya está casi llena",
     ],
-    hint: "y llenala de vino",
+    hint: "y serviime un poco de vino",
     full: ["¡Salud!", ""],
     tapWhenFull: false,
-    label: "Tocá para llenar la botella",
+    label: "Tocá para llenar la copa",
   },
   bonbons: {
     taps: 6,
@@ -85,8 +84,6 @@ const CONFIG: Record<RitualKind, Config> = {
 
 const HEART =
   "M150 262 C 80 212 30 170 30 110 C 30 72 58 46 92 46 C 118 46 138 60 150 82 C 162 60 182 46 208 46 C 242 46 270 72 270 110 C 270 170 220 212 150 262 Z";
-const BOTTLE =
-  "M136 30 H164 V92 C164 112 195 118 195 148 V262 Q195 272 185 272 H115 Q105 272 105 262 V148 C105 118 136 112 136 92 Z";
 const WAVE =
   "M0 0 Q 22 -7 45 0 T 90 0 T 135 0 T 180 0 T 225 0 T 270 0 T 315 0 V 14 H 0 Z";
 
@@ -184,50 +181,35 @@ function HeartArt({
   );
 }
 
-function BottleArt({ p, pulse }: { p: number; pulse: number }) {
+const BOWL = "M98 40 H202 C204 92 196 150 150 170 C104 150 96 92 98 40 Z";
+function GlassArt({ p, pulse }: { p: number; pulse: number }) {
   return (
     <svg viewBox="0 0 300 300" aria-hidden="true">
-      <path d={BOTTLE} fill="#ffffff66" />
-      <Liquid
-        id="rb"
-        shape={BOTTLE}
-        top={40}
-        bottom={272}
-        p={p}
-        pulse={pulse}
-      />
+      <path d={BOWL} fill="#ffffff66" />
+      <Liquid id="rg" shape={BOWL} top={46} bottom={172} p={p} pulse={pulse} />
       <path
-        d={BOTTLE}
+        d={BOWL}
         fill="none"
         stroke="#581C2B"
-        strokeWidth="4"
+        strokeWidth="3"
         strokeLinejoin="round"
       />
-      {/* Cork and neck foil */}
-      <rect x="139" y="14" width="22" height="18" rx="3" fill="#C8AA7B" />
-      <rect x="134" y="30" width="32" height="10" rx="2" fill="#581C2B" />
-      {/* Label with a small heart */}
-      <rect
-        x="118"
-        y="178"
-        width="64"
-        height="58"
-        rx="4"
-        fill="#fbf4ea"
-        stroke="#C8AA7B"
-        strokeWidth="2"
-      />
       <path
-        d="M150 222 C 138 213 129 206 129 197 C 129 191 134 187 139 187 C 144 187 148 190 150 194 C 152 190 156 187 161 187 C 166 187 171 191 171 197 C 171 206 162 213 150 222 Z"
-        fill="#581C2B"
-      />
-      <path
-        d="M114 158 C 113 190 113 220 116 252"
+        d="M110 48 C108 85 112 120 134 150"
         stroke="#ffffff77"
         strokeWidth="5"
         fill="none"
         strokeLinecap="round"
-        opacity={p > 0.3 ? 1 : 0.6}
+      />
+      <path
+        d="M150 170 V 238"
+        stroke="#581C2B"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+      <path
+        d="M112 246 C120 236 180 236 188 246 Q150 254 112 246 Z"
+        fill="#581C2B"
       />
     </svg>
   );
@@ -235,12 +217,12 @@ function BottleArt({ p, pulse }: { p: number; pulse: number }) {
 
 // Six cups in a heart-shaped box, filled in this order.
 const CUPS = [
-  [112, 118],
-  [188, 118],
-  [88, 172],
-  [150, 172],
-  [212, 172],
-  [150, 224],
+  [98, 122],
+  [150, 136],
+  [202, 122],
+  [123, 182],
+  [177, 182],
+  [150, 228],
 ];
 const BOX =
   "M150 262 C 78 214 26 170 26 112 C 26 72 56 44 92 44 C 118 44 138 58 150 80 C 162 58 182 44 208 44 C 244 44 274 72 274 112 C 274 170 222 214 150 262 Z";
@@ -275,7 +257,7 @@ function BonbonArt({ filled }: { filled: number }) {
               {i % 3 === 1 ? (
                 // Heart-shaped bonbon
                 <path
-                  transform={`translate(${cx} ${cy}) scale(1.2) translate(${-cx} ${-cy})`}
+                  transform={`translate(${cx} ${cy}) scale(1.1) translate(${-cx} ${-cy})`}
                   d={`M${cx} ${cy + 15} C ${cx - 12} ${cy + 6} ${cx - 19} ${cy} ${cx - 19} ${cy - 7} C ${cx - 19} ${cy - 14} ${cx - 13} ${cy - 18} ${cx - 8} ${cy - 18} C ${cx - 4} ${cy - 18} ${cx - 1} ${cy - 15} ${cx} ${cy - 12} C ${cx + 1} ${cy - 15} ${cx + 4} ${cy - 18} ${cx + 8} ${cy - 18} C ${cx + 13} ${cy - 18} ${cx + 19} ${cy - 14} ${cx + 19} ${cy - 7} C ${cx + 19} ${cy} ${cx + 12} ${cy + 6} ${cx} ${cy + 15} Z`}
                   fill="#7A2A3D"
                 />
@@ -428,7 +410,7 @@ export default function TapRitual({
         : "";
 
   let art: ReactNode;
-  if (kind === "bottle") art = <BottleArt p={p} pulse={pulse} />;
+  if (kind === "glass") art = <GlassArt p={p} pulse={pulse} />;
   else if (kind === "bonbons") art = <BonbonArt filled={taps} />;
   else if (kind === "sun") art = <SunArt p={p} />;
   else art = <HeartArt p={p} pulse={pulse} full={full} />;

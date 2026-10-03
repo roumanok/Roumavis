@@ -43,7 +43,7 @@ test("surprise flow", async ({ page }) => {
 });
 
 for (const [slot, label, shot] of [
-  ["vista", /llenar la botella/, "bottle"],
+  ["vista", /llenar la copa/, "glass"],
   ["mesita", /despertar el sol/, "sun"],
 ] as const) {
   test(`ritual ${slot}`, async ({ page }) => {
