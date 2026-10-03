@@ -4,7 +4,7 @@ import { slots, labels, type MomentSlot, type MomentInfo } from "@/lib/models";
 import { api } from "@/lib/client";
 import StoryCollage from "./StoryCollage";
 import Carousel from "./Carousel";
-import { ErrorMessage, Logo, PhotoFrame, Scene } from "./ui";
+import { ErrorMessage, Logo, PhotoFrame, Scene, LoadingHeart } from "./ui";
 export default function MomentViewer() {
   const [available, setAvailable] = useState<MomentSlot[] | null>(null),
     [index, setIndex] = useState(0),
@@ -34,7 +34,7 @@ export default function MomentViewer() {
   if (!available)
     return (
       <Scene id="moments-loading">
-        <p>Cargando nuestros momentos…</p>
+        <LoadingHeart label="Cargando nuestros momentos…" />
         <ErrorMessage>{error}</ErrorMessage>
         {error && (
           <button className="text-button" onClick={() => void load()}>

@@ -1426,3 +1426,15 @@ button.danger {
     transform: scale(1.06);
   }
 }
+.loading-heart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.loading-heart svg {
+  width: 64px;
+  height: 64px;
+  animation: wine-beat 1.3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 10px #581c2b33);
+}

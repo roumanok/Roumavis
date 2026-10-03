@@ -15,6 +15,7 @@ import {
   Ornament,
   PhotoFrame,
   Scene,
+  LoadingHeart,
 } from "./ui";
 export default function Story() {
   const [scene, setScene] = useState<number | null>(null),
@@ -86,8 +87,7 @@ export default function Story() {
       )}
       {scene === null ? (
         <Scene id="loading">
-          <Logo />
-          <p className="eyebrow">Un momento…</p>
+          <LoadingHeart />
         </Scene>
       ) : (
         <Scene

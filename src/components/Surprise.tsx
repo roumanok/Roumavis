@@ -4,7 +4,7 @@ import { api, loadLocal, saveLocal, syncReset } from "@/lib/client";
 import { defaults, type ContentResponse } from "@/lib/models";
 import RegisterMoment from "./RegisterMoment";
 import TapRitual, { type RitualKind } from "./TapRitual";
-import { Button, ErrorMessage, Scene } from "./ui";
+import { Button, ErrorMessage, Scene, LoadingHeart } from "./ui";
 type Stage = "intro" | "moment" | "bye";
 const RITUAL: Record<"vista" | "cama" | "mesita", RitualKind> = {
   vista: "glass",
@@ -73,6 +73,7 @@ export default function Surprise({
     return (
       <main className="experience">
         <Scene id={`${slot}-ritual`}>
+          {ritual === "pending" && <LoadingHeart />}
           {ritual === "show" && (
             <TapRitual
               kind={RITUAL[slot]}

@@ -7,7 +7,14 @@ import RegisterMoment from "./RegisterMoment";
 import TapRitual from "./TapRitual";
 import Confetti from "./Confetti";
 import MomentViewer from "./MomentViewer";
-import { Button, ErrorMessage, Logo, Ornament, Scene } from "./ui";
+import {
+  Button,
+  ErrorMessage,
+  Logo,
+  Ornament,
+  Scene,
+  LoadingHeart,
+} from "./ui";
 const draftSchema = z.object({
   step: z.number().int().min(0).max(12),
   ratings: z.array(z.number().int().min(0).max(5)).length(9),
@@ -128,8 +135,7 @@ export default function Survey() {
     return (
       <main className="experience">
         <Scene id="loading">
-          <Logo />
-          <p>Cargando…</p>
+          <LoadingHeart />
           <ErrorMessage>{error}</ErrorMessage>
           {error && (
             <Button onClick={() => void check()}>VOLVER A INTENTAR</Button>

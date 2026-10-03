@@ -115,3 +115,18 @@ export function Locked() {
     </main>
   );
 }
+
+/** Neutral loading state: a small beating heart (no logo, no spoilers). */
+export function LoadingHeart({ label = "Un momento…" }: { label?: string }) {
+  return (
+    <div className="loading-heart" role="status">
+      <svg viewBox="0 0 300 300" aria-hidden="true">
+        <path
+          d="M150 262 C 80 212 30 170 30 110 C 30 72 58 46 92 46 C 118 46 138 60 150 82 C 162 60 182 46 208 46 C 242 46 270 72 270 110 C 270 170 220 212 150 262 Z"
+          fill="#581C2B"
+        />
+      </svg>
+      <p className="eyebrow">{label}</p>
+    </div>
+  );
+}
