@@ -28,7 +28,7 @@ const CONFIG: Record<RitualKind, Config> = {
   heart: {
     taps: 7,
     lines: ["Tocá el corazón", ...FILL_LINES],
-    hint: "y llenalo de vino",
+    hint: "para llenarlo",
     full: ["Lleno de nosotros", "tocalo"],
     tapWhenFull: true,
     label: "Tocá para llenar el corazón",

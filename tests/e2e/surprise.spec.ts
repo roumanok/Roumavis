@@ -63,5 +63,11 @@ for (const [slot, label, shot] of [
     await expect(
       page.getByRole("button", { name: /REGISTRAR MOMENTO/ }),
     ).toBeVisible({ timeout: 8000 });
+    // After an admin reset, the ritual shows again on this device.
+    await page.route("**/api/reset", (r) =>
+      r.fulfill({ json: { resetAt: "2026-10-03T15:30:00.000Z" } }),
+    );
+    await page.reload();
+    await expect(page.getByRole("button", { name: label })).toBeVisible();
   });
 }

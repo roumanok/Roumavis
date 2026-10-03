@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { api, loadLocal, saveLocal } from "@/lib/client";
+import { api, loadLocal, saveLocal, syncReset } from "@/lib/client";
 import { defaults, type ContentResponse } from "@/lib/models";
 import RegisterMoment from "./RegisterMoment";
 import TapRitual, { type RitualKind } from "./TapRitual";
@@ -37,9 +37,18 @@ export default function Surprise({
     void load();
   }, [load]);
   // The tap ritual is shown once per device (until the admin resets).
+  // A reset from the admin clears this device's progress first.
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setRitual(loadLocal<boolean>(`ritual-${slot}`, false) ? "done" : "show");
+    let alive = true;
+    void syncReset().then(() => {
+      if (alive)
+        setRitual(
+          loadLocal<boolean>(`ritual-${slot}`, false) ? "done" : "show",
+        );
+    });
+    return () => {
+      alive = false;
+    };
   }, [slot]);
   // Opening the camera hides the message; cancelling without saving restores it.
   const onCamera = useCallback((open: boolean) => {
