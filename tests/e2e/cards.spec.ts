@@ -20,6 +20,6 @@ test("admin downloads the printable QR cards PDF", async ({ page }) => {
   expect(file.suggestedFilename()).toBe("roumavis-tarjetas-qr.pdf");
   await file.saveAs("test-results/tarjetas.pdf");
   await expect(page.getByRole("link", { name: "Probar enlace" })).toHaveCount(
-    5,
+    6,
   );
 });

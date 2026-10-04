@@ -12,9 +12,14 @@ export async function GET(request: Request) {
     });
   await setSession("guest");
   const requested = url.searchParams.get("destino") ?? "/";
-  const path = ["/", "/vista", "/cama", "/mesita", "/encuesta"].includes(
-    requested,
-  )
+  const path = [
+    "/",
+    "/vista",
+    "/cama",
+    "/mesita",
+    "/encuesta",
+    "/trivia",
+  ].includes(requested)
     ? requested
     : "/";
   const response = NextResponse.redirect(new URL(path, url.origin), 303);

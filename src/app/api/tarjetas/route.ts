@@ -21,6 +21,11 @@ export async function GET(request: Request) {
           url: link("/encuesta"),
         },
         { id: "mesita", label: "Lámpara (mesita)", url: link("/mesita") },
+        {
+          id: "trivia",
+          label: "Signo de pregunta (trivia)",
+          url: link("/trivia"),
+        },
       ],
     });
   });

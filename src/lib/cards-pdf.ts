@@ -14,6 +14,7 @@ const SLOTS = [
   [10.4, 79.4],
   [101.6, 79.4],
   [10.4, 132.8],
+  [101.6, 132.8],
 ];
 async function bytes(url: string) {
   const res = await fetch(url);
