@@ -141,16 +141,16 @@ export default function LockRitual({ onDone }: { onDone: () => void }) {
   return (
     <div className={`lock-ritual is-${phase}`}>
       <div className="lock">
-        <svg className="lock-shackle" viewBox="0 0 200 150" aria-hidden="true">
+        <svg className="lock-shackle" viewBox="0 0 240 220" aria-hidden="true">
           <path
-            d="M42 150 V 76 C 42 32 72 12 100 12 C 128 12 158 32 158 76 V 150"
+            d="M30 220 V 112 C 30 48 70 14 120 14 C 170 14 210 48 210 112 V 220"
             fill="none"
             stroke="#C8AA7B"
-            strokeWidth="20"
+            strokeWidth="24"
             strokeLinecap="round"
           />
           <path
-            d="M42 150 V 76 C 42 32 72 12 100 12 C 128 12 158 32 158 76 V 150"
+            d="M30 220 V 112 C 30 48 70 14 120 14 C 170 14 210 48 210 112 V 220"
             fill="none"
             stroke="#ffffff55"
             strokeWidth="4"
