@@ -38,10 +38,10 @@ export async function makeCollage() {
   ctx.strokeStyle = "#C8AA7B";
   ctx.lineWidth = 2;
   ctx.strokeRect(36, 36, 1008, 1848);
-  ctx.drawImage(logo, 390, 64, 300, 300);
+  ctx.drawImage(logo, 425, 44, 230, 230);
   ctx.textAlign = "center";
   // Polaroids whose photo window is 4:5, same as the captured selfies.
-  // Three across the top, then "Buen día" and a larger final photo.
+  // Album of six: two per row, in chronological order, slightly scattered.
   const polaroid = (x: number, y: number, w: number, a: number) => ({
     x,
     y,
@@ -50,11 +50,12 @@ export async function makeCollage() {
     a,
   });
   const positions = [
-    polaroid(50, 418, 330, -0.045),
-    polaroid(375, 402, 330, 0.03),
-    polaroid(700, 422, 330, -0.035),
-    polaroid(66, 1030, 390, 0.035),
-    polaroid(486, 940, 530, -0.02),
+    polaroid(92, 292, 360, -0.04),
+    polaroid(600, 306, 360, 0.035),
+    polaroid(118, 792, 360, 0.03),
+    polaroid(584, 778, 360, -0.04),
+    polaroid(84, 1280, 360, -0.025),
+    polaroid(596, 1266, 360, 0.04),
   ];
   positions.forEach((p, i) => {
     ctx.save();
@@ -96,15 +97,15 @@ export async function makeCollage() {
       ctx.fillText("♡", p.w / 2, p.h / 2);
     }
     ctx.fillStyle = "#581C2B";
-    ctx.font = `${p.w > 450 ? 32 : 26}px "Cormorant Garamond", Georgia`;
+    ctx.font = `${p.w > 450 ? 32 : 28}px "Cormorant Garamond", Georgia`;
     ctx.fillText(labels[slots[i]].replace(" ❤️", ""), p.w / 2, p.h - 22);
     ctx.restore();
   });
   ctx.fillStyle = "#581C2B";
   ctx.font = "600 46px Manrope, sans-serif";
-  ctx.fillText("#NuestroFinde", 540, 1748);
+  ctx.fillText("#NuestroFinde", 540, 1818);
   ctx.font = "30px Manrope, sans-serif";
-  ctx.fillText("Palmas de la Laguna · 2026", 540, 1806);
+  ctx.fillText("Palmas de la Laguna · 2026", 540, 1862);
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve, "image/png"),
   );
@@ -155,7 +156,7 @@ export default function StoryCollage({
         <img
           className="collage-preview"
           src={url}
-          alt="Nuestro recuerdo en cinco fotos"
+          alt="Nuestro recuerdo en seis fotos"
           width={1080}
           height={1920}
         />

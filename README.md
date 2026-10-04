@@ -56,3 +56,10 @@ Fuentes autoalojadas mediante Fontsource, sin llamadas a Google Fonts. No se pro
 - `npm test`: 4 pruebas OK (calendario, firmas/expiración, contenido, encuesta).
 - `npm run test:e2e`: 4 pruebas OK en Chromium mobile (390×844), contra build de producción: acceso real por QR/admin, historia completa con fallback de cámara y revisita, borrador y reintento de encuesta, galería/descarga PNG 1080×1920, edición y borrado desde admin. APIs de Blob simuladas; ninguna foto de prueba se subió al almacenamiento real.
 - Inspección visual de bienvenida y collage renderizados: OK. Cámara física, audio/fade específico de Safari y Blob real pendientes de prueba con la configuración final.
+
+## Trivia (/trivia)
+
+- Se define en **Admin → Trivia**: preguntas (texto y/o foto), de 2 a 5 opciones con la correcta marcada, premio (título, texto, foto) y frases finales por puntaje (todas bien, ≥ 70 %, ≥ 40 %, menos).
+- Datos en Blob: `data/trivia.json`, fotos en `trivia/{id}.jpg` y `trivia/premio.jpg`, resultado en `data/trivia-resultado.json` (lo ve el admin).
+- Flujo: ritual del "?" → intro → preguntas con barra de progreso hacia el regalo → puntaje y frase → premio + registrar momento (slot `trivia`, incluido en la galería y el collage).
+- "Reiniciar" borra el resultado y la foto del momento, no las preguntas.

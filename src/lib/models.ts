@@ -4,6 +4,7 @@ export const slots = [
   "vista",
   "cama",
   "mesita",
+  "trivia",
   "encuesta",
 ] as const;
 export type MomentSlot = (typeof slots)[number];
@@ -13,6 +14,7 @@ export const labels: Record<MomentSlot, string> = {
   vista: "La vista",
   cama: "Nuestro momento",
   mesita: "Buen día ❤️",
+  trivia: "Nuestra trivia",
   encuesta: "Y así terminamos...",
 };
 export const questions = [
@@ -83,3 +85,60 @@ export const staticPhotoPath = (year: number) =>
 export const photoPath = (year: number, version?: string | null) =>
   `/api/history/${year}${version ? `?v=${encodeURIComponent(version)}` : ""}`;
 export const yearSchema = z.coerce.number().int().min(2004).max(2025);
+
+/* ---------- Trivia ---------- */
+export const triviaIdSchema = z
+  .string()
+  .regex(/^[a-z0-9-]{1,40}$/, "Identificador inválido");
+export const triviaQuestionSchema = z.object({
+  id: triviaIdSchema,
+  text: z.string().max(1000),
+  image: z.boolean(),
+  options: z.array(z.string().max(300)).min(2).max(5),
+  correct: z.number().int().min(0).max(4),
+});
+export const triviaSchema = z.object({
+  questions: z.array(triviaQuestionSchema).max(40),
+  prize: z.object({
+    title: z.string().max(200),
+    text: z.string().max(3000),
+    image: z.boolean(),
+  }),
+  phrases: z.object({
+    perfect: z.string().max(500),
+    high: z.string().max(500),
+    mid: z.string().max(500),
+    low: z.string().max(500),
+  }),
+});
+export type TriviaQuestion = z.infer<typeof triviaQuestionSchema>;
+export type Trivia = z.infer<typeof triviaSchema>;
+export const triviaDefaults: Trivia = {
+  questions: [],
+  prize: { title: "Tu premio", text: "", image: false },
+  phrases: {
+    perfect: "¡Perfecto! Me conocés más que nadie ❤️",
+    high: "¡Casi perfecto! Se nota que estuviste atenta…",
+    mid: "Nada mal… pero vamos a tener que repasar algunas cosas 😉",
+    low: "Bueno… lo importante es que estamos juntos 😂",
+  },
+};
+export const triviaResultSchema = z.object({
+  answers: z.array(z.number().int().min(0).max(4)).max(40),
+  score: z.number().int().min(0),
+  total: z.number().int().min(0),
+});
+export type TriviaResult = z.infer<typeof triviaResultSchema> & {
+  finishedAt: string;
+};
+/** Final phrase for a score: all right, ≥ 70 %, ≥ 40 %, or below. */
+export function triviaTier(score: number, total: number) {
+  if (total > 0 && score === total) return "perfect" as const;
+  const r = total ? score / total : 0;
+  return r >= 0.7
+    ? ("high" as const)
+    : r >= 0.4
+      ? ("mid" as const)
+      : ("low" as const);
+}
+export const triviaImagePath = (id: string) => `/api/trivia/image/${id}`;

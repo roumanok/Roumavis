@@ -32,7 +32,7 @@ export default function AdminCards() {
     <section className="admin-card">
       <h2>Tarjetas QR</h2>
       <p>
-        PDF A4 con las cinco tarjetas listas para imprimir (tamaño tarjeta
+        PDF A4 con las seis tarjetas listas para imprimir (tamaño tarjeta
         personal). Los QR son estáticos: apuntan directo a esta web y no vencen.
       </p>
       <Button disabled={busy} onClick={() => void download()}>

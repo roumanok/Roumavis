@@ -13,12 +13,14 @@ import {
 import RegisterMoment from "./RegisterMoment";
 import AdminHistoryPhoto from "./AdminHistoryPhoto";
 import AdminCards from "./AdminCards";
+import AdminTrivia from "./AdminTrivia";
 import { Button, ErrorMessage, Logo } from "./ui";
 const sections = [
   "Historia",
   "Mensajes",
   "Momentos",
   "Encuesta",
+  "Trivia",
   "Tarjetas",
 ] as const;
 function AdminMoment({ slot }: { slot: MomentSlot }) {
@@ -216,16 +218,16 @@ export default function AdminPanel() {
           <div id="reset-desc">
             <p>Se va a eliminar definitivamente:</p>
             <ul>
-              <li>Las cinco fotos de los momentos (incluida la selfie 2026)</li>
-              <li>Las respuestas de la encuesta</li>
+              <li>Las fotos de los momentos (incluida la selfie 2026)</li>
+              <li>Las respuestas de la encuesta y el resultado de la trivia</li>
               <li>
                 El progreso guardado en cada celular (la historia y la encuesta
                 arrancan de cero la próxima vez que se abran)
               </li>
             </ul>
             <p>
-              Las fotos de la historia (2004–2025) no se tocan.{" "}
-              <strong>No se puede deshacer.</strong>
+              Las fotos de la historia (2004–2025) y las preguntas de la trivia
+              no se tocan. <strong>No se puede deshacer.</strong>
             </p>
           </div>
           <label className="reset-option">
@@ -348,6 +350,7 @@ export default function AdminPanel() {
           ))}
         </div>
       )}
+      {tab === "Trivia" && <AdminTrivia />}
       {tab === "Tarjetas" && <AdminCards />}
       {tab === "Encuesta" &&
         (survey ? (

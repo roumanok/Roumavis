@@ -5,7 +5,11 @@ import {
   defaults,
   contentSchema,
   type MomentSlot,
+  slots,
   surveySchema,
+  triviaDefaults,
+  triviaResultSchema,
+  triviaSchema,
 } from "./models";
 // The SDK retries "unknown" errors up to 10 times with exponential backoff,
 // which can leave a request hanging for minutes. Fail fast instead.
@@ -77,10 +81,9 @@ export async function readResetAt() {
  */
 export async function resetExperience(includeContent: boolean) {
   const paths = [
-    ...(["historia", "vista", "cama", "mesita", "encuesta"] as const).map(
-      momentPath,
-    ),
+    ...slots.map(momentPath),
     "data/encuesta.json",
+    "data/trivia-resultado.json",
     ...(includeContent ? ["data/contenido.json"] : []),
   ];
   await del(paths);
@@ -94,3 +97,16 @@ export async function resetExperience(includeContent: boolean) {
   });
   return resetAt;
 }
+
+/* ---------- Trivia ---------- */
+export const triviaBlobPath = (id: string) => `trivia/${id}.jpg`;
+export async function readTrivia() {
+  return (
+    (await readJSON("data/trivia.json", triviaSchema))?.data ?? triviaDefaults
+  );
+}
+export const readTriviaResult = () =>
+  readJSON(
+    "data/trivia-resultado.json",
+    triviaResultSchema.extend({ finishedAt: z.string().datetime() }),
+  );

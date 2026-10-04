@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-export type RitualKind = "heart" | "heart-survey" | "glass" | "bonbons" | "sun";
+export type RitualKind =
+  "heart" | "heart-survey" | "glass" | "bonbons" | "sun" | "question";
 
 type Config = {
   taps: number;
@@ -63,6 +64,22 @@ const CONFIG: Record<RitualKind, Config> = {
     full: ["¡Llena!", ""],
     tapWhenFull: false,
     label: "Tocá para llenar la caja de bombones",
+  },
+  question: {
+    taps: 7,
+    lines: [
+      "Tocá el signo",
+      "Mmm…",
+      "Más…",
+      "Seguí…",
+      "Casi…",
+      "Un toque más",
+      "¡Ya casi!",
+    ],
+    hint: "a ver qué pasa",
+    full: ["", ""],
+    tapWhenFull: false,
+    label: "Tocá el signo de pregunta",
   },
   sun: {
     taps: 7,
@@ -286,6 +303,39 @@ function BonbonArt({ filled }: { filled: number }) {
   );
 }
 
+function QuestionArt({ p, full }: { p: number; full: boolean }) {
+  const scale = 0.28 + 0.72 * p;
+  return (
+    <svg viewBox="0 0 300 300" aria-hidden="true">
+      <g
+        className={`ritual-question${full ? " is-full" : ""}`}
+        style={{ transform: `scale(${scale})` }}
+      >
+        <circle
+          cx="150"
+          cy="150"
+          r="118"
+          fill="#fbf4ea"
+          stroke="#C8AA7B"
+          strokeWidth="3"
+          opacity={p}
+        />
+        <text
+          x="150"
+          y="214"
+          textAnchor="middle"
+          fontFamily='"Cormorant Garamond", Georgia, serif'
+          fontWeight="500"
+          fontSize="210"
+          fill="#581C2B"
+        >
+          ?
+        </text>
+      </g>
+    </svg>
+  );
+}
+
 function SunArt({ p }: { p: number }) {
   const rays = Array.from({ length: 12 }, (_, i) => i * 30);
   const len = 8 + 52 * p;
@@ -413,6 +463,7 @@ export default function TapRitual({
   if (kind === "glass") art = <GlassArt p={p} pulse={pulse} />;
   else if (kind === "bonbons") art = <BonbonArt filled={taps} />;
   else if (kind === "sun") art = <SunArt p={p} />;
+  else if (kind === "question") art = <QuestionArt p={p} full={full} />;
   else art = <HeartArt p={p} pulse={pulse} full={full} />;
 
   return (

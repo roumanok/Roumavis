@@ -13,7 +13,7 @@ async function fixtures(page: Page, { photos = false } = {}) {
     version = "v1";
   const image = await readFile("public/logo_roumavis.png");
   const saved = new Set(
-    photos ? ["historia", "vista", "cama", "mesita", "encuesta"] : [],
+    photos ? ["historia", "vista", "cama", "mesita", "trivia", "encuesta"] : [],
   );
   await page.route("**/api/reset", async (route) => {
     if (route.request().method() === "POST") {
@@ -233,7 +233,7 @@ test("survey survives reload and failed send; gallery exports a real story PNG",
   await expect(page.getByText(/Gracias por participar/)).toHaveCount(0);
   await page.screenshot({ path: "test-results/thanks.png" });
   await page.getByRole("button", { name: "❤️ VER NUESTROS MOMENTOS" }).click();
-  await expect(page.getByText("Nuestros momentos · 1 / 5")).toBeVisible();
+  await expect(page.getByText("Nuestros momentos · 1 / 6")).toBeVisible();
   const vp = (await page.locator(".carousel-viewport").boundingBox())!;
   await page.mouse.move(vp.x + 250, vp.y + 200);
   await page.mouse.down();
@@ -243,15 +243,15 @@ test("survey survives reload and failed send; gallery exports a real story PNG",
   await expect(
     page
       .locator('.carousel-slide[aria-hidden="false"]')
-      .getByText("Nuestros momentos · 2 / 5"),
+      .getByText("Nuestros momentos · 2 / 6"),
   ).toBeVisible();
   await page.screenshot({ path: "test-results/moments.png" });
-  for (let i = 0; i < 4; i++)
+  for (let i = 0; i < 5; i++)
     await page.getByRole("button", { name: "Momento siguiente" }).click();
   await expect(page.getByText(/ahora a planear/)).toBeVisible();
   await page.screenshot({ path: "test-results/planear.png" });
   await page.getByRole("button", { name: "CREAR NUESTRO RECUERDO" }).click();
-  const preview = page.getByAltText("Nuestro recuerdo en cinco fotos");
+  const preview = page.getByAltText("Nuestro recuerdo en seis fotos");
   await expect(preview).toBeVisible();
   expect(
     await preview.evaluate((img: HTMLImageElement) => [
@@ -301,7 +301,7 @@ test("admin signs in on server, saves editable content and deletes a moment", as
     .click();
   await expect(
     page.getByRole("button", { name: "Eliminar foto", exact: true }),
-  ).toHaveCount(4);
+  ).toHaveCount(5);
   await page.getByRole("button", { name: "Reiniciar", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "¿Reiniciar toda la experiencia?" }),
