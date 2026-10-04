@@ -5,7 +5,7 @@ import { defaults, photoPath, type ContentResponse } from "@/lib/models";
 import AudioController, { type AudioHandle } from "./AudioController";
 import Counter from "./Counter";
 import RegisterMoment from "./RegisterMoment";
-import TapRitual from "./TapRitual";
+import LockRitual from "./LockRitual";
 import Carousel from "./Carousel";
 import {
   Button,
@@ -131,7 +131,7 @@ export default function Story() {
                 <Button onClick={next}>¡SÍ!</Button>
               </div>
             ) : (
-              <TapRitual kind="heart" onDone={() => setIntroDone(true)} />
+              <LockRitual onDone={() => setIntroDone(true)} />
             ))}
           {scene === 1 && (
             <>

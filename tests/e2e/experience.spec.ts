@@ -96,11 +96,20 @@ test("mobile story, calendar counter, camera fallback, completion and revisit", 
 }) => {
   await fixtures(page);
   await enter(page);
-  // Opening ritual: fill the heart, tap it, then the welcome appears.
+  // Opening: the padlock opens with the date it all started (09/07/2004).
   await expect(page.getByRole("heading", { name: /Bienvenida/ })).toHaveCount(
     0,
   );
-  await playRitual(page, /llenar el corazón/, 7, "heart");
+  await expect(page.getByText("¿Cuándo empezó todo?")).toBeVisible();
+  await page.screenshot({ path: "test-results/lock-closed.png" });
+  for (let i = 0; i < 8; i++)
+    await page.getByRole("button", { name: "Subir día" }).click();
+  for (let i = 0; i < 6; i++)
+    await page.getByRole("button", { name: "Subir mes" }).click();
+  for (let i = 0; i < 22; i++)
+    await page.getByRole("button", { name: "Bajar año" }).click();
+  await expect(page.getByText("Ahí empezó todo…")).toBeVisible();
+  await page.screenshot({ path: "test-results/lock-open.png" });
   await expect(page.getByRole("heading", { name: /Bienvenida/ })).toBeVisible();
   await page.waitForTimeout(1200);
   expect(
