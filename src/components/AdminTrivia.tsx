@@ -62,10 +62,7 @@ function TriviaPhoto({
   }
   return (
     <div className="trivia-photo">
-      {has && (
-         
-        <img src={`${triviaImagePath(id)}?v=${version}`} alt="" />
-      )}
+      {has && <img src={`${triviaImagePath(id)}?v=${version}`} alt="" />}
       <div className="history-photo-actions">
         <label className="file-picker">
           {busy ? "Subiendo…" : has ? "Cambiar foto" : "📷 Agregar foto"}

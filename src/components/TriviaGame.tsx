@@ -107,7 +107,6 @@ export default function TriviaGame() {
       .then(() => save({ ...progress, reported: true }))
       .catch(() => {})
       .finally(() => (reporting.current = false));
-     
   }, [trivia, progress, score, total]);
 
   if (error)
@@ -163,9 +162,14 @@ export default function TriviaGame() {
             width={500}
             height={500}
           />
-          <h1 className="emotional">¡Llegó la hora de nuestra trivia!</h1>
-          <p className="emotional small-text">¿Estás lista?</p>
-          <Button onClick={() => setStage("play")}>¡OBVIO!</Button>
+          <p className="emotional small-text">¿Andás con ganas de jugar?</p>
+          <h1 className="emotional">
+            ¡Llegó la hora de nuestra trivia! ¡Mirá que hay premio! 🎁
+          </h1>
+          <p className="emotional small-text">
+            A ver cuánto sabés de nosotros...
+          </p>
+          <Button onClick={() => setStage("play")}>¡ESTOY LISTA!</Button>
         </Scene>
       </main>
     );
@@ -186,7 +190,7 @@ export default function TriviaGame() {
           {q.text && <h1 className="trivia-question">{q.text}</h1>}
           {q.image && (
             <figure className="trivia-image">
-              { }
+              {}
               <img src={triviaImagePath(q.id)} alt="" />
             </figure>
           )}
@@ -269,13 +273,12 @@ export default function TriviaGame() {
       <Scene id="trivia-prize" className="fade trivia-layout">
         {!cameraOpen && (
           <>
-            <p className="eyebrow">Tu premio</p>
             {trivia.prize.title && (
               <h1 className="emotional">{trivia.prize.title}</h1>
             )}
             {trivia.prize.image && (
               <figure className="trivia-image prize">
-                { }
+                {}
                 <img src={triviaImagePath("premio")} alt="El premio" />
               </figure>
             )}

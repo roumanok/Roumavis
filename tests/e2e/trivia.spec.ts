@@ -54,9 +54,10 @@ test("guest plays the trivia and gets the prize", async ({ page }) => {
   await page.goto(`/acceso?k=${key}&destino=/trivia`);
   await playRitual(page, /signo de pregunta/, 7, "question");
   await expect(
-    page.getByRole("heading", { name: "¡Llegó la hora de nuestra trivia!" }),
+    page.getByRole("heading", { name: /¡Llegó la hora de nuestra trivia!/ }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "¡OBVIO!" }).click();
+  await page.screenshot({ path: "test-results/trivia-intro.png" });
+  await page.getByRole("button", { name: "¡ESTOY LISTA!" }).click();
   // Q1 right
   await page.getByRole("button", { name: /En un bar/ }).click();
   await expect(page.getByText("¡Correcto!")).toBeVisible();
