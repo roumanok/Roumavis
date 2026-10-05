@@ -29,19 +29,31 @@ function GiftIcon() {
 }
 
 /** Corner logo + progress bar that fills toward the gift with each hit. */
-function TriviaBar({ score, total }: { score: number; total: number }) {
+function TriviaBar({
+  score,
+  total,
+  label,
+}: {
+  score: number;
+  total: number;
+  label?: string;
+}) {
   const pct = total ? (score / total) * 100 : 0;
   return (
-    <div className="trivia-topbar" aria-hidden="true">
+    <div className="trivia-topbar">
       <img
         className="trivia-topbar-logo"
         src="/logo_roumavis.png"
         alt=""
         width={500}
         height={500}
+        aria-hidden="true"
       />
-      <div className="trivia-bar">
-        <div className="trivia-bar-fill" style={{ width: `${pct}%` }} />
+      <div className="trivia-bar-wrap">
+        {label && <p className="trivia-count">{label}</p>}
+        <div className="trivia-bar" aria-hidden="true">
+          <div className="trivia-bar-fill" style={{ width: `${pct}%` }} />
+        </div>
       </div>
       <GiftIcon />
     </div>
@@ -181,12 +193,13 @@ export default function TriviaGame() {
     const right = answered && picked === q.correct;
     return (
       <main className="experience trivia">
-        <TriviaBar score={score + (right ? 1 : 0)} total={total} />
+        <TriviaBar
+          score={score + (right ? 1 : 0)}
+          total={total}
+          label={`Pregunta ${i + 1} de ${total}`}
+        />
         {answered && right && <Confetti key={burst} seed={burst} />}
         <Scene id={`trivia-q-${i}`} className="soft trivia-layout">
-          <p className="eyebrow">
-            Pregunta {i + 1} de {total}
-          </p>
           {q.text && <h1 className="trivia-question">{q.text}</h1>}
           {q.image && (
             <figure className="trivia-image">
