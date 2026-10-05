@@ -1875,3 +1875,56 @@ button.danger {
   background: #fffaf3;
   width: 100%;
 }
+/* Trivia: floating feedback pill */
+.trivia-pill {
+  position: fixed;
+  left: 50%;
+  top: 46%;
+  z-index: 30;
+  padding: 14px 28px;
+  border-radius: 999px;
+  background: var(--wine);
+  color: var(--cream);
+  font-family: var(--font-serif);
+  font-size: 1.9rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  box-shadow:
+    0 10px 30px #581c2b55,
+    0 0 0 3px #fffaf3;
+  pointer-events: none;
+  animation: pill-float 3s cubic-bezier(0.3, 1.2, 0.4, 1) both;
+}
+.trivia-pill.ouch {
+  background: #fffaf3;
+  color: #86263c;
+  box-shadow:
+    0 10px 30px #581c2b33,
+    0 0 0 2px #c99694;
+}
+@keyframes pill-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 30px) scale(0.6) rotate(-6deg);
+  }
+  14% {
+    opacity: 1;
+    transform: translate(-50%, -8px) scale(1.08) rotate(2deg);
+  }
+  24% {
+    transform: translate(-50%, 0) scale(1) rotate(-1deg);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -14px) scale(1) rotate(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -40px) scale(0.95);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trivia-pill {
+    transform: translate(-50%, 0);
+  }
+}

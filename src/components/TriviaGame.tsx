@@ -5,7 +5,7 @@ import { triviaImagePath, triviaTier, type Trivia } from "@/lib/models";
 import Confetti from "./Confetti";
 import RegisterMoment from "./RegisterMoment";
 import TapRitual from "./TapRitual";
-import { Button, ErrorMessage, LoadingHeart, NextButton, Scene } from "./ui";
+import { Button, ErrorMessage, LoadingHeart, Scene } from "./ui";
 
 const LETTERS = ["A", "B", "C", "D", "E"];
 type Stage = "loading" | "ritual" | "intro" | "play" | "score" | "prize";
@@ -69,6 +69,13 @@ export default function TriviaGame() {
     [error, setError] = useState(""),
     [cameraOpen, setCameraOpen] = useState(false);
   const reporting = useRef(false);
+  const advance = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (advance.current) clearTimeout(advance.current);
+    },
+    [],
+  );
 
   const load = useCallback(async () => {
     try {
@@ -224,6 +231,13 @@ export default function TriviaGame() {
                   onClick={() => {
                     setPicked(k);
                     if (k === q.correct) setBurst((b) => b + 1);
+                    // Show the floating message for 3 s, then move on.
+                    advance.current = setTimeout(() => {
+                      const next = { answers: [...progress.answers, k] };
+                      save(next);
+                      setPicked(null);
+                      if (next.answers.length === total) setStage("score");
+                    }, 3000);
                   }}
                 >
                   <span className="trivia-letter">{LETTERS[k]}</span>
@@ -233,20 +247,12 @@ export default function TriviaGame() {
             })}
           </div>
           {answered && (
-            <div className="trivia-feedback" role="status">
-              <p className={`emotional small-text${right ? "" : " ouch"}`}>
-                {right ? "¡Correcto!" : "Ouch! No era esa"}
-              </p>
-              <NextButton
-                label={i + 1 === total ? "Ver resultado" : "Siguiente pregunta"}
-                onClick={() => {
-                  if (picked === null) return;
-                  const next = { answers: [...progress.answers, picked] };
-                  save(next);
-                  setPicked(null);
-                  if (next.answers.length === total) setStage("score");
-                }}
-              />
+            <div
+              key={`pill-${i}`}
+              className={`trivia-pill${right ? "" : " ouch"}`}
+              role="status"
+            >
+              {right ? "¡Correcto!" : "Ouch! No era esa"}
             </div>
           )}
         </Scene>

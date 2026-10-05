@@ -62,18 +62,22 @@ test("guest plays the trivia and gets the prize", async ({ page }) => {
   await page.getByRole("button", { name: /En un bar/ }).click();
   await expect(page.getByText("¡Correcto!")).toBeVisible();
   await page.screenshot({ path: "test-results/trivia-right.png" });
-  await page.getByRole("button", { name: "Siguiente pregunta" }).click();
+  // Moves on by itself after 3 seconds.
+  await expect(page.getByText("Pregunta 2 de 3")).toBeVisible({
+    timeout: 5000,
+  });
   // Q2 wrong (with photo)
   await page.getByRole("button", { name: /Mendoza/ }).click();
   await expect(page.getByText("Ouch! No era esa")).toBeVisible();
   await page.screenshot({ path: "test-results/trivia-wrong.png" });
   // Reload mid-game keeps progress
-  await page.getByRole("button", { name: "Siguiente pregunta" }).click();
+  await expect(page.getByText("Pregunta 3 de 3")).toBeVisible({
+    timeout: 5000,
+  });
   await page.reload();
   await expect(page.getByText("Pregunta 3 de 3")).toBeVisible();
   await page.getByRole("button", { name: /Pastas/ }).click();
-  await page.getByRole("button", { name: "Ver resultado" }).click();
-  await expect(page.getByText("Puntaje final")).toBeVisible();
+  await expect(page.getByText("Puntaje final")).toBeVisible({ timeout: 5000 });
   await expect(page.getByText(triviaDefaults.phrases.mid)).toBeVisible();
   await page.screenshot({ path: "test-results/trivia-score.png" });
   await expect
