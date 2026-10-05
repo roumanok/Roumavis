@@ -28,17 +28,17 @@ function GiftIcon() {
   );
 }
 
-/** Corner logo + progress bar that fills toward the gift with each hit. */
+/** Corner logo + bar that advances with each answered question. */
 function TriviaBar({
-  score,
+  done,
   total,
   label,
 }: {
-  score: number;
+  done: number;
   total: number;
   label?: string;
 }) {
-  const pct = total ? (score / total) * 100 : 0;
+  const pct = total ? (done / total) * 100 : 0;
   return (
     <div className="trivia-topbar">
       <img
@@ -201,7 +201,7 @@ export default function TriviaGame() {
     return (
       <main className="experience trivia">
         <TriviaBar
-          score={score + (right ? 1 : 0)}
+          done={i + (answered ? 1 : 0)}
           total={total}
           label={`Pregunta ${i + 1} de ${total}`}
         />
@@ -263,7 +263,7 @@ export default function TriviaGame() {
   if (stage === "score")
     return (
       <main className="experience trivia">
-        <TriviaBar score={score} total={total} />
+        <TriviaBar done={total} total={total} />
         {score === total && <Confetti seed={99} />}
         <Scene id="trivia-score" className="fade trivia-layout">
           <p className="eyebrow">Puntaje final</p>
@@ -288,7 +288,7 @@ export default function TriviaGame() {
 
   return (
     <main className="experience trivia">
-      <TriviaBar score={score} total={total} />
+      <TriviaBar done={total} total={total} />
       <Scene id="trivia-prize" className="fade trivia-layout">
         {!cameraOpen && (
           <>
