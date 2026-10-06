@@ -10,6 +10,8 @@ import {
   triviaDefaults,
   triviaResultSchema,
   triviaSchema,
+  type ResetInfo,
+  type ResetScope,
 } from "./models";
 // The SDK retries "unknown" errors up to 10 times with exponential backoff,
 // which can leave a request hanging for minutes. Fail fast instead.
@@ -70,9 +72,36 @@ export const deleteMoment = (slot: MomentSlot) => deleteImage(momentPath(slot));
 export async function deleteImage(path: string) {
   await del(path);
 }
-const resetSchema = z.object({ resetAt: z.string() });
-export async function readResetAt() {
-  return (await readJSON("data/reset.json", resetSchema))?.data.resetAt ?? null;
+const resetSchema = z.object({
+  resetAt: z.string().nullable().default(null),
+  scopes: z.record(z.string(), z.string()).default({}),
+});
+export async function readResetInfo(): Promise<ResetInfo> {
+  const data = (await readJSON("data/reset.json", resetSchema))?.data;
+  return {
+    resetAt: data?.resetAt ?? null,
+    scopes: (data?.scopes ?? {}) as ResetInfo["scopes"],
+  };
+}
+async function writeResetInfo(info: ResetInfo) {
+  await put("data/reset.json", JSON.stringify(info), {
+    access: "private",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: "application/json",
+    cacheControlMaxAge: 60,
+  });
+}
+/** Resets a single experience: its photo, its answers and device progress. */
+export async function resetOne(scope: ResetScope) {
+  const paths = [momentPath(scope)];
+  if (scope === "encuesta") paths.push("data/encuesta.json");
+  if (scope === "trivia") paths.push("data/trivia-resultado.json");
+  await del(paths);
+  const info = await readResetInfo();
+  info.scopes[scope] = new Date().toISOString();
+  await writeResetInfo(info);
+  return info;
 }
 /**
  * Deletes every guest-generated piece of data (photos + survey) and, when
@@ -88,13 +117,7 @@ export async function resetExperience(includeContent: boolean) {
   ];
   await del(paths);
   const resetAt = new Date().toISOString();
-  await put("data/reset.json", JSON.stringify({ resetAt }), {
-    access: "private",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-    cacheControlMaxAge: 60,
-  });
+  await writeResetInfo({ resetAt, scopes: {} });
   return resetAt;
 }
 

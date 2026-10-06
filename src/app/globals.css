@@ -2008,3 +2008,8 @@ button.danger {
   margin: 0;
   display: inline-block;
 }
+.summary-actions .summary-reset {
+  margin-left: auto;
+  font-size: 0.82rem;
+  opacity: 0.85;
+}

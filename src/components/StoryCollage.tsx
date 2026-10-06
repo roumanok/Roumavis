@@ -87,12 +87,12 @@ export async function makeCollage() {
     a,
   });
   const positions = [
-    polaroid(64, 292, 392, -0.04),
-    polaroid(612, 304, 392, 0.035),
-    polaroid(86, 786, 392, 0.03),
-    polaroid(594, 774, 392, -0.04),
-    polaroid(60, 1270, 392, -0.025),
-    polaroid(616, 1258, 392, 0.04),
+    polaroid(112, 292, 392, -0.04),
+    polaroid(568, 304, 392, 0.035),
+    polaroid(124, 786, 392, 0.03),
+    polaroid(556, 774, 392, -0.04),
+    polaroid(108, 1270, 392, -0.025),
+    polaroid(572, 1258, 392, 0.04),
   ];
   positions.forEach((p, i) => {
     ctx.save();

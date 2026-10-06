@@ -142,3 +142,27 @@ export function triviaTier(score: number, total: number) {
       : ("low" as const);
 }
 export const triviaImagePath = (id: string) => `/api/trivia/image/${id}`;
+
+/* ---------- Per-experience reset ---------- */
+export const resetScopes = [
+  "historia",
+  "vista",
+  "cama",
+  "mesita",
+  "trivia",
+  "encuesta",
+] as const;
+export type ResetScope = (typeof resetScopes)[number];
+/** Device-local keys (without the roumavis:v1: prefix) per experience. */
+export const localKeys: Record<ResetScope, string[]> = {
+  historia: ["story-progress", "story-complete"],
+  vista: ["ritual-vista"],
+  cama: ["ritual-cama"],
+  mesita: ["ritual-mesita"],
+  trivia: ["ritual-trivia", "trivia-progress", "trivia-prize"],
+  encuesta: ["ritual-encuesta", "survey", "survey-complete"],
+};
+export type ResetInfo = {
+  resetAt: string | null;
+  scopes: Partial<Record<ResetScope, string>>;
+};

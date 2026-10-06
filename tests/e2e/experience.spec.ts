@@ -289,6 +289,24 @@ test("admin signs in on server, saves editable content and deletes a moment", as
   await expect(page.getByRole("heading", { name: "La trivia" })).toBeVisible();
   await expect(page.getByRole("link", { name: "ABRIR" })).toHaveCount(6);
   await page.screenshot({ path: "test-results/admin-summary.png" });
+  // Each experience can be reset on its own from the summary.
+  const scoped: unknown[] = [];
+  const scopedReset = async (route: import("@playwright/test").Route) => {
+    if (route.request().method() === "POST")
+      scoped.push(route.request().postDataJSON());
+    await route.fulfill({ json: { resetAt: null, scopes: {} } });
+  };
+  await page.route("**/api/reset", scopedReset);
+  page.once("dialog", (dialog) => {
+    expect(dialog.message()).toContain("resultado de la trivia");
+    void dialog.accept();
+  });
+  await page
+    .locator(".summary-card", { hasText: "La trivia" })
+    .getByRole("button", { name: "Reiniciar", exact: true })
+    .click();
+  await expect.poll(() => scoped).toEqual([{ scope: "trivia" }]);
+  await page.unroute("**/api/reset", scopedReset);
   await page.getByRole("button", { name: "Historia", exact: true }).click();
   await page.getByLabel("Frase de 2004").fill("Nuestro primer año.");
   await page.getByRole("button", { name: "GUARDAR CAMBIOS" }).click();

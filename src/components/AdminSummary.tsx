@@ -1,7 +1,12 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/client";
-import type { MomentInfo, MomentSlot, TriviaResult } from "@/lib/models";
+import type {
+  MomentInfo,
+  MomentSlot,
+  ResetScope,
+  TriviaResult,
+} from "@/lib/models";
 import { ErrorMessage } from "./ui";
 
 type Card = { id: string; url: string };
@@ -13,7 +18,7 @@ type Status = {
 };
 
 const EXPERIENCES: {
-  id: string;
+  id: ResetScope;
   path: string;
   title: string;
   detail: string;
@@ -67,7 +72,8 @@ const EXPERIENCES: {
 export default function AdminSummary() {
   const [status, setStatus] = useState<Status | null>(null),
     [error, setError] = useState(""),
-    [copied, setCopied] = useState("");
+    [copied, setCopied] = useState(""),
+    [resetting, setResetting] = useState("");
   const load = useCallback(async () => {
     try {
       const [moments, survey, trivia, cards] = await Promise.all([
@@ -107,6 +113,35 @@ export default function AdminSummary() {
       setTimeout(() => setCopied(""), 1800);
     } catch {
       window.prompt("Copiá el enlace:", url);
+    }
+  }
+
+  async function reset(e: (typeof EXPERIENCES)[number]) {
+    const extra =
+      e.id === "encuesta"
+        ? ", las respuestas de la encuesta"
+        : e.id === "trivia"
+          ? ", el resultado de la trivia"
+          : "";
+    if (
+      !confirm(
+        `¿Reiniciar "${e.title}"?\n\nSe borra su foto${extra} y el progreso guardado en el celular. Las demás experiencias no se tocan.`,
+      )
+    )
+      return;
+    setResetting(e.id);
+    setError("");
+    try {
+      await api("/api/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scope: e.id }),
+      });
+      await load();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setResetting("");
     }
   }
 
@@ -170,6 +205,13 @@ export default function AdminSummary() {
                       : "Copiar link de la tarjeta"}
                   </button>
                 )}
+                <button
+                  className="text-button danger-text summary-reset"
+                  disabled={!!resetting}
+                  onClick={() => void reset(e)}
+                >
+                  {resetting === e.id ? "Reiniciando…" : "Reiniciar"}
+                </button>
               </div>
             </div>
           </section>

@@ -1,3 +1,4 @@
+import { localKeys, type ResetInfo, type ResetScope } from "./models";
 export async function api<T>(url: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
@@ -37,13 +38,31 @@ export function saveLocal(key: string, value: unknown) {
  */
 export async function syncReset() {
   try {
-    const { resetAt } = await api<{ resetAt: string | null }>("/api/reset");
-    if (!resetAt || loadLocal<string | null>("reset-at", null) === resetAt)
-      return;
-    Object.keys(localStorage)
-      .filter((key) => key.startsWith(KEY))
-      .forEach((key) => localStorage.removeItem(key));
-    saveLocal("reset-at", resetAt);
+    const info = await api<ResetInfo>("/api/reset");
+    const remove = (key: string) => {
+      try {
+        localStorage.removeItem(KEY + key);
+      } catch {
+        /* ignore */
+      }
+    };
+    // Whole reset: forget everything on this device.
+    if (
+      info.resetAt &&
+      loadLocal<string | null>("reset-at", null) !== info.resetAt
+    ) {
+      Object.keys(localStorage)
+        .filter((key) => key.startsWith(KEY))
+        .forEach((key) => localStorage.removeItem(key));
+      saveLocal("reset-at", info.resetAt);
+    }
+    // Single-experience resets: forget only that experience's progress.
+    for (const [scope, at] of Object.entries(info.scopes ?? {})) {
+      if (!at || loadLocal<string | null>(`reset-at-${scope}`, null) === at)
+        continue;
+      localKeys[scope as ResetScope]?.forEach(remove);
+      saveLocal(`reset-at-${scope}`, at);
+    }
   } catch {
     /* Offline or no storage: keep whatever progress exists. */
   }
