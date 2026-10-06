@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { slots, labels, type MomentInfo } from "@/lib/models";
+import { slots, type MomentInfo } from "@/lib/models";
 import { api } from "@/lib/client";
 import { Button, ErrorMessage } from "./ui";
 async function loadImage(url: string) {
@@ -19,6 +19,43 @@ async function loadImage(url: string) {
     URL.revokeObjectURL(objectUrl);
   }
 }
+/** Small heart (with a soft shadow and highlight) centred on cx, cy. */
+function drawHeart(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  size: number,
+  rot: number,
+  color: string,
+) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(rot);
+  const s = size / 240;
+  ctx.scale(s, s);
+  ctx.translate(-150, -154);
+  const path = new Path2D(
+    "M150 262 C 80 212 30 170 30 110 C 30 72 58 46 92 46 C 118 46 138 60 150 82 C 162 60 182 46 208 46 C 242 46 270 72 270 110 C 270 170 220 212 150 262 Z",
+  );
+  ctx.shadowColor = "#581c2b40";
+  ctx.shadowBlur = 10 / s;
+  ctx.shadowOffsetY = 3 / s;
+  ctx.fillStyle = color;
+  ctx.fill(path);
+  ctx.shadowColor = "transparent";
+  ctx.strokeStyle = "#fffaf3";
+  ctx.lineWidth = 14;
+  ctx.stroke(path);
+  ctx.strokeStyle = "#ffffff66";
+  ctx.lineWidth = 12;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(78, 92);
+  ctx.bezierCurveTo(68, 100, 62, 112, 62, 126);
+  ctx.stroke();
+  ctx.restore();
+}
+
 export async function makeCollage() {
   await document.fonts.ready;
   const photos = await Promise.all(
@@ -46,16 +83,16 @@ export async function makeCollage() {
     x,
     y,
     w,
-    h: Math.round((w - 30) * 1.25) + 69,
+    h: Math.round((w - 30) * 1.25) + 50,
     a,
   });
   const positions = [
-    polaroid(92, 292, 360, -0.04),
-    polaroid(600, 306, 360, 0.035),
-    polaroid(118, 792, 360, 0.03),
-    polaroid(584, 778, 360, -0.04),
-    polaroid(84, 1280, 360, -0.025),
-    polaroid(596, 1266, 360, 0.04),
+    polaroid(64, 292, 392, -0.04),
+    polaroid(612, 304, 392, 0.035),
+    polaroid(86, 786, 392, 0.03),
+    polaroid(594, 774, 392, -0.04),
+    polaroid(60, 1270, 392, -0.025),
+    polaroid(616, 1258, 392, 0.04),
   ];
   positions.forEach((p, i) => {
     ctx.save();
@@ -71,7 +108,7 @@ export async function makeCollage() {
     const x = 15,
       y = 15,
       w = p.w - 30,
-      h = p.h - 69;
+      h = p.h - 50;
     ctx.fillStyle = "#e9dfd4";
     ctx.fillRect(x, y, w, h);
     const image = photos[i];
@@ -96,9 +133,21 @@ export async function makeCollage() {
       ctx.font = "70px Georgia";
       ctx.fillText("♡", p.w / 2, p.h / 2);
     }
-    ctx.fillStyle = "#581C2B";
-    ctx.font = `${p.w > 450 ? 32 : 28}px "Cormorant Garamond", Georgia`;
-    ctx.fillText(labels[slots[i]].replace(" ❤️", ""), p.w / 2, p.h - 22);
+    // Little hearts resting on two opposite corners (alternating per photo).
+    const colors = ["#581C2B", "#C99694", "#7A2A3D", "#C8AA7B"];
+    const corners =
+      i % 2 === 0
+        ? [
+            [6, 8, -0.35],
+            [p.w - 6, p.h - 8, 0.3],
+          ]
+        : [
+            [p.w - 6, 8, 0.35],
+            [6, p.h - 8, -0.3],
+          ];
+    corners.forEach(([cx, cy, rot], k) =>
+      drawHeart(ctx, cx, cy, k ? 34 : 42, rot, colors[(i + k * 2) % 4]),
+    );
     ctx.restore();
   });
   ctx.fillStyle = "#581C2B";

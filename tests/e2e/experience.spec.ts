@@ -285,6 +285,11 @@ test("admin signs in on server, saves editable content and deletes a moment", as
   await expect(
     page.getByRole("button", { name: "Historia", exact: true }),
   ).toBeVisible();
+  // The admin opens on the summary of every experience.
+  await expect(page.getByRole("heading", { name: "La trivia" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "ABRIR" })).toHaveCount(6);
+  await page.screenshot({ path: "test-results/admin-summary.png" });
+  await page.getByRole("button", { name: "Historia", exact: true }).click();
   await page.getByLabel("Frase de 2004").fill("Nuestro primer año.");
   await page.getByRole("button", { name: "GUARDAR CAMBIOS" }).click();
   await expect(page.getByRole("status")).toHaveText("Cambios guardados.");

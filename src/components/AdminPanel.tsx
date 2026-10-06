@@ -14,8 +14,10 @@ import RegisterMoment from "./RegisterMoment";
 import AdminHistoryPhoto from "./AdminHistoryPhoto";
 import AdminCards from "./AdminCards";
 import AdminTrivia from "./AdminTrivia";
+import AdminSummary from "./AdminSummary";
 import { Button, ErrorMessage, Logo } from "./ui";
 const sections = [
+  "Resumen",
   "Historia",
   "Mensajes",
   "Momentos",
@@ -76,7 +78,7 @@ function AdminMoment({ slot }: { slot: MomentSlot }) {
   );
 }
 export default function AdminPanel() {
-  const [tab, setTab] = useState<(typeof sections)[number]>("Historia"),
+  const [tab, setTab] = useState<(typeof sections)[number]>("Resumen"),
     [data, setData] = useState<ContentResponse | null>(null),
     [survey, setSurvey] = useState<Survey | null>(null),
     [error, setError] = useState(""),
@@ -350,6 +352,7 @@ export default function AdminPanel() {
           ))}
         </div>
       )}
+      {tab === "Resumen" && <AdminSummary />}
       {tab === "Trivia" && <AdminTrivia />}
       {tab === "Tarjetas" && <AdminCards />}
       {tab === "Encuesta" &&
