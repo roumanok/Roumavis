@@ -87,12 +87,12 @@ export async function makeCollage() {
     a,
   });
   const positions = [
-    polaroid(112, 292, 392, -0.04),
-    polaroid(568, 304, 392, 0.035),
-    polaroid(124, 786, 392, 0.03),
-    polaroid(556, 774, 392, -0.04),
-    polaroid(108, 1270, 392, -0.025),
-    polaroid(572, 1258, 392, 0.04),
+    polaroid(112, 322, 392, -0.04),
+    polaroid(568, 334, 392, 0.035),
+    polaroid(124, 816, 392, 0.03),
+    polaroid(556, 804, 392, -0.04),
+    polaroid(108, 1300, 392, -0.025),
+    polaroid(572, 1288, 392, 0.04),
   ];
   positions.forEach((p, i) => {
     ctx.save();
@@ -150,11 +150,6 @@ export async function makeCollage() {
     );
     ctx.restore();
   });
-  ctx.fillStyle = "#581C2B";
-  ctx.font = "600 46px Manrope, sans-serif";
-  ctx.fillText("#NuestroFinde", 540, 1818);
-  ctx.font = "30px Manrope, sans-serif";
-  ctx.fillText("Palmas de la Laguna · 2026", 540, 1862);
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve, "image/png"),
   );
