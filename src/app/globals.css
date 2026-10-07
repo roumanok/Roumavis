@@ -1468,13 +1468,33 @@ button.danger {
   margin-bottom: -34%;
   position: relative;
   z-index: 0;
-  transition: transform 0.7s cubic-bezier(0.3, 1.4, 0.5, 1);
-  transform-origin: 87% 100%;
+  /* Pivot on the long right leg, right where it leaves the body once the
+     shackle is lifted; the short left leg pops out and swings free. */
+  transform-origin: 87.5% 82%;
   filter: drop-shadow(0 3px 4px #581c2b33);
 }
 .is-open .lock-shackle,
 .is-leaving .lock-shackle {
-  transform: translateY(-20%) rotate(-12deg);
+  transform: translateY(-17%) rotate(-26deg);
+  animation: shackle-open 1.1s ease-out;
+}
+/* Pops up out of the body first, then swings open on the long leg. */
+@keyframes shackle-open {
+  0% {
+    transform: none;
+  }
+  35% {
+    transform: translateY(-19%);
+  }
+  50% {
+    transform: translateY(-17%);
+  }
+  82% {
+    transform: translateY(-17%) rotate(-30deg);
+  }
+  100% {
+    transform: translateY(-17%) rotate(-26deg);
+  }
 }
 .lock-body {
   position: relative;
