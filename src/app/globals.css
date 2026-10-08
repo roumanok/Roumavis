@@ -1705,12 +1705,15 @@ button.danger {
     0 8px 30px #581c2b14,
     0 0 0 1px #c8aa7b45;
   transform: rotate(-1deg);
+  max-width: 88%;
+}
+.trivia-image.prize {
   max-width: 100%;
 }
 .trivia-image img {
   display: block;
   max-width: 100%;
-  max-height: 34dvh;
+  max-height: 28dvh;
   object-fit: contain;
 }
 .trivia-image.prize img {
