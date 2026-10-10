@@ -340,6 +340,14 @@ test("admin signs in on server, saves editable content and deletes a moment", as
   await expect(
     page.getByRole("button", { name: "Eliminar foto", exact: true }),
   ).toHaveCount(0);
+  // A moment can also be uploaded from the gallery (no camera).
+  await page
+    .getByLabel("🖼️ Subir foto de la galería")
+    .first()
+    .setInputFiles("public/logo_roumavis.png");
+  await expect(
+    page.getByRole("button", { name: "Eliminar foto", exact: true }),
+  ).toHaveCount(1);
   await page
     .getByRole("button", { name: "Cerrar sesión", exact: true })
     .click();

@@ -11,6 +11,7 @@ import {
   type MomentInfo,
 } from "@/lib/models";
 import RegisterMoment from "./RegisterMoment";
+import { compressImage } from "./CameraCapture";
 import AdminHistoryPhoto from "./AdminHistoryPhoto";
 import AdminCards from "./AdminCards";
 import AdminTrivia from "./AdminTrivia";
@@ -31,6 +32,24 @@ function AdminMoment({ slot }: { slot: MomentSlot }) {
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const known = useCallback((value: boolean) => setExists(value), []);
+  /** Upload a photo picked from the gallery (no camera). */
+  async function upload(file: File) {
+    setBusy(true);
+    setError("");
+    try {
+      const info = await api<MomentInfo>(`/api/moments/${slot}?info`);
+      const form = new FormData();
+      form.append("photo", await compressImage(file), `${slot}.jpg`);
+      form.append("version", info.version ?? "");
+      await api(`/api/moments/${slot}`, { method: "PUT", body: form });
+      setExists(true);
+      setVersion((v) => v + 1);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
   async function remove() {
     if (!confirm("¿Eliminar esta foto? Esta acción no se puede deshacer."))
       return;
@@ -54,6 +73,23 @@ function AdminMoment({ slot }: { slot: MomentSlot }) {
     <section className="admin-card">
       <h2>{slot}</h2>
       <RegisterMoment key={version} slot={slot} alwaysShow onKnown={known} />
+      <label className="file-picker">
+        {busy
+          ? "Subiendo…"
+          : exists
+            ? "🖼️ Cambiar por una foto de la galería"
+            : "🖼️ Subir foto de la galería"}
+        <input
+          type="file"
+          accept="image/*"
+          disabled={busy}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (file) void upload(file);
+          }}
+        />
+      </label>
       {exists && (
         <>
           <a
@@ -69,7 +105,7 @@ function AdminMoment({ slot }: { slot: MomentSlot }) {
             disabled={busy}
             onClick={() => void remove()}
           >
-            {busy ? "Eliminando…" : "Eliminar foto"}
+            {busy ? "Un momento…" : "Eliminar foto"}
           </button>
         </>
       )}
